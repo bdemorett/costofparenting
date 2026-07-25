@@ -1,24 +1,224 @@
 @import "tailwindcss";
+@config "../tailwind.config.ts";
+
+/**
+ * Cost of Parenting — warm premium editorial financial aesthetic
+ * Cream canvas · deep teal accent · serif display · sans UI controls
+ */
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #faf9f6;
+  --foreground: #44403c;
+  --brand: #0f766e; /* teal-700 */
+  --brand-hover: #115e59; /* teal-800 */
+  --brand-muted: #0d9488; /* teal-600 */
+  --brand-soft: #f0fdfa; /* teal-50 */
+  --brand-foreground: #ffffff;
+  --ink: #292524;
+  --ink-soft: #57534e;
+  --ink-muted: #78716c;
+  --surface: #ffffff;
+  --surface-subtle: #f5f4f0;
+  --surface-elevated: #ffffff;
+  --border-soft: rgba(231, 229, 228, 0.7);
+  --font-ui: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-playfair), "Georgia", "Times New Roman", serif;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-brand: var(--brand);
+  --color-brand-hover: var(--brand-hover);
+  --color-brand-foreground: var(--brand-foreground);
+  --color-ink: var(--ink);
+  --color-ink-muted: var(--ink-muted);
+  --color-surface: var(--surface);
+  --color-surface-subtle: var(--surface-subtle);
+  --color-primary: var(--brand);
+  --color-primary-foreground: var(--brand-foreground);
+  --color-cream: #faf9f6;
+  --color-cream-muted: #f5f4f0;
+  --color-cream-deep: #efece6;
+
+  --font-sans: var(--font-ui);
+  --font-serif: var(--font-display);
+  --font-display: var(--font-display);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
+/* ——— Base canvas & type ——— */
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-ui);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+h1,
+h2,
+h3,
+.font-display,
+.font-serif {
+  font-family: var(--font-display);
+  letter-spacing: -0.02em;
+  color: var(--ink);
+  font-weight: 600;
+}
+
+h1 {
+  font-size: clamp(2rem, 4vw, 3.25rem);
+  line-height: 1.15;
+}
+
+h2 {
+  font-size: clamp(1.375rem, 2.5vw, 1.875rem);
+  line-height: 1.25;
+}
+
+h3 {
+  font-size: clamp(1.125rem, 1.8vw, 1.35rem);
+  line-height: 1.35;
+}
+
+/* Data labels, controls, and form UI stay cleanly sans */
+label,
+input,
+select,
+textarea,
+button,
+[role="button"],
+.font-sans,
+.data-label,
+.ui-control {
+  font-family: var(--font-ui);
+}
+
+input,
+select,
+textarea {
+  border-radius: 0.75rem;
+  border: 1px solid var(--border-soft);
+  background: var(--surface);
+  color: var(--ink);
+  font-size: 0.875rem;
+  transition: border-color 150ms ease, box-shadow 150ms ease;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  outline: none;
+  border-color: color-mix(in srgb, var(--brand) 55%, #e7e5e4);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--brand) 18%, transparent);
+}
+
+::selection {
+  background: color-mix(in srgb, var(--brand) 22%, white);
+  color: var(--ink);
+}
+
+/*
+ * Do not set unlayered `a { color: inherit }` — it beats Tailwind utilities
+ * (e.g. text-white on teal CTAs) and forces dark text on brand buttons.
+ * Links inherit body color by default; use explicit text-* classes for accents.
+ */
+
+/* Soft editorial surfaces */
+.pillow {
+  background: var(--surface);
+  border-radius: 1rem;
+  border: 1px solid rgba(231, 229, 228, 0.45);
+  box-shadow: 0 1px 2px rgba(41, 37, 36, 0.04),
+    0 8px 24px rgba(41, 37, 36, 0.03);
+}
+
+.surface-card {
+  background: var(--surface);
+  border: 1px solid rgba(231, 229, 228, 0.45);
+  border-radius: 1rem;
+  box-shadow: 0 1px 2px rgba(41, 37, 36, 0.04),
+    0 10px 28px rgba(41, 37, 36, 0.04);
+}
+
+/* ——— Brand pill buttons (global cascade) ——— */
+
+/* Brand CTAs — white label on teal (also covers <Link>/<a> pills) */
+a.bg-teal-700,
+a.bg-teal-800,
+button.bg-teal-700,
+button.bg-teal-800 {
+  color: #ffffff;
+}
+
+.btn-pill,
+.btn-brand {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+  background: var(--brand);
+  color: var(--brand-foreground);
+  padding: 0.75rem 1.5rem;
+  font-family: var(--font-ui);
+  font-size: 0.875rem;
+  font-weight: 500;
+  line-height: 1.25;
+  text-align: center;
+  transition: background-color 150ms ease, transform 150ms ease,
+    box-shadow 150ms ease, border-color 150ms ease, color 150ms ease;
+}
+
+.btn-pill:hover,
+.btn-brand:hover {
+  background: var(--brand-hover);
+}
+
+.btn-pill:disabled,
+.btn-brand:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.btn-pill-outline,
+.btn-outline {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+  border: 1px solid rgba(168, 162, 158, 0.7);
+  background: var(--surface);
+  color: var(--ink);
+  padding: 0.75rem 1.5rem;
+  font-family: var(--font-ui);
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: background-color 150ms ease, border-color 150ms ease,
+    color 150ms ease;
+}
+
+.btn-pill-outline:hover,
+.btn-outline:hover {
+  border-color: color-mix(in srgb, var(--brand) 40%, #d6d3d1);
+  color: var(--brand-hover);
+}
+
+/* Accent text utility for dynamic blocks */
+.text-brand {
+  color: var(--brand);
+}
+
+.bg-canvas {
+  background: var(--background);
+}
+
+.prose-editorial p {
+  line-height: 1.7;
+  color: var(--ink-soft);
+}
+
+.prose-editorial strong {
+  color: var(--ink);
+  font-weight: 600;
 }

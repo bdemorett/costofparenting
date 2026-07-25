@@ -1,8 +1,9 @@
 import SuccessLoader from "./SuccessLoader";
 
 export const metadata = {
-  title: "Payment Successful — Before You Move There",
-  description: "Your lifetime premium neighborhood access is being activated.",
+  title: "Payment Successful",
+  description:
+    "Your lifetime premium access is active. Review your checkout summary and open your city dashboard.",
 };
 
 export default function PricingSuccessPage() {

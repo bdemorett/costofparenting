@@ -5,23 +5,23 @@ import { Show, SignInButton, SignUpButton, UserButton } from "@clerk/nextjs";
 const variants = {
   dark: {
     signIn:
-      "rounded-lg border border-white/15 bg-white/5 px-3 py-2 text-sm font-semibold text-slate-200 transition hover:border-emerald-500/40 hover:bg-emerald-500/10 hover:text-white",
+      "rounded-full border border-stone-300 bg-white px-3 py-1.5 text-xs font-medium text-stone-700 transition-all hover:border-teal-700/40 hover:text-teal-800 sm:px-4 sm:py-2 sm:text-sm",
     signUp:
-      "rounded-lg bg-emerald-500 px-3 py-2 text-sm font-semibold text-white transition hover:bg-emerald-400",
+      "rounded-full bg-teal-700 px-3 py-1.5 text-xs font-medium text-white transition-all hover:bg-teal-800 sm:px-4 sm:py-2 sm:text-sm",
   },
   light: {
     signIn:
-      "rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-700 transition hover:border-emerald-300 hover:text-emerald-700",
+      "rounded-full border border-stone-200/80 bg-white/80 px-3 py-1.5 text-xs font-medium text-stone-700 transition-all hover:border-teal-700/30 hover:text-teal-800 sm:px-4 sm:py-2 sm:text-sm",
     signUp:
-      "rounded-lg bg-emerald-600 px-3 py-2 text-sm font-semibold text-white transition hover:bg-emerald-700",
+      "rounded-full bg-teal-700 px-3 py-1.5 text-xs font-medium text-white transition-all hover:bg-teal-800 sm:px-4 sm:py-2 sm:text-sm",
   },
 };
 
-export default function AuthNav({ variant = "dark" }) {
-  const styles = variants[variant] || variants.dark;
+export default function AuthNav({ variant = "light" }) {
+  const styles = variants[variant] || variants.light;
 
   return (
-    <div className="flex items-center gap-2 sm:gap-3">
+    <div className="flex items-center gap-1.5 sm:gap-2">
       <Show when="signed-out">
         <SignInButton mode="modal">
           <button type="button" className={styles.signIn}>
@@ -39,7 +39,7 @@ export default function AuthNav({ variant = "dark" }) {
           afterSignOutUrl="/"
           appearance={{
             elements: {
-              avatarBox: "h-9 w-9",
+              avatarBox: "h-8 w-8 sm:h-9 sm:w-9",
             },
           }}
         />

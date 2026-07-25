@@ -3,38 +3,38 @@ import LegalPageLayout, { LegalSection } from "../components/LegalPageLayout";
 import { PREMIUM_PLAN } from "../utils/pricing";
 
 export const metadata = {
-  title: "About — Before You Move There",
+  title: "About",
   description:
-    "Learn about Before You Move There — neighborhood intelligence for smarter relocation decisions.",
+    "Learn about Cost of Parenting — hyper-localized forecasts for the real cost of raising kids.",
 };
 
 export default function AboutPage() {
   return (
     <LegalPageLayout
-      title="About Before You Move There"
-      description="We help people understand neighborhoods before they sign a lease, make an offer, or pack a single box."
+      title="About Cost of Parenting"
+      description="We help families understand what raising kids actually costs where they live — before budgets get blindsided."
     >
       <LegalSection title="Our mission">
         <p>
-          Moving is one of the biggest decisions most people make — and bad neighborhood intel is
-          expensive. Before You Move There exists to surface the signals that matter before you
-          commit: safety, schools, noise, air quality, true ownership costs, insurance hazards, and
-          commute math.
+          Parenting costs vary wildly by city. Childcare in New York is not childcare in Austin,
+          and housing, healthcare, and everyday expenses shift with every move. Cost of Parenting
+          exists to surface clear, location-aware numbers: annual baselines, age-band multipliers,
+          and multi-year outlooks families can plan around.
         </p>
         <p>
           We believe open-access basics should stay free. When you need the full picture, a single
-          lifetime pass unlocks the deep-dive tools serious movers rely on.
+          lifetime pass unlocks deeper localized forecasts and premium tools.
         </p>
       </LegalSection>
 
       <LegalSection title="What we offer">
         <p>
-          <strong className="text-slate-900">Free neighborhood reports</strong> include
-          open-access safety, noise, school, and environmental scores for US locations you search.
+          <strong className="text-slate-900">Free location insights</strong> include
+          open-access scores and cost-of-living context for US cities you search.
         </p>
         <p>
           <strong className="text-slate-900">{PREMIUM_PLAN.name}</strong> ({PREMIUM_PLAN.price}{" "}
-          {PREMIUM_PLAN.period}) unlocks premium intelligence on every neighborhood, including:
+          {PREMIUM_PLAN.period}) unlocks premium intelligence, including:
         </p>
         <ul className="list-disc space-y-2 pl-6">
           {PREMIUM_PLAN.features.map((feature) => (
@@ -43,7 +43,7 @@ export default function AboutPage() {
         </ul>
         <p>
           See full details on our{" "}
-          <Link href="/pricing" className="text-emerald-700 underline">
+          <Link href="/pricing" className="text-teal-700 underline">
             pricing page
           </Link>
           .
@@ -52,22 +52,20 @@ export default function AboutPage() {
 
       <LegalSection title="How our data works">
         <p>
-          Reports combine third-party property and neighborhood datasets, public records, and
-          modeled estimates. When a location cannot be verified through geocoding, we may show
-          estimated scores derived from your search text.
+          Forecasts combine local baseline cost models, age-band multipliers, and public datasets.
+          When a location cannot be verified through live data, we fall back to curated mock
+          baselines so planning tools keep working.
         </p>
         <p>
-          Our content is for research and education — not a substitute for professional inspections,
-          appraisals, legal review, or on-the-ground due diligence. Always verify critical facts
-          independently.
+          Our content is for research and education — not a substitute for professional financial,
+          legal, or childcare advice. Always verify critical figures independently.
         </p>
       </LegalSection>
 
       <LegalSection title="Who we serve">
         <p>
-          Renters comparing cities, families evaluating school districts, remote workers testing
-          commute tradeoffs, and agents preparing clients with neighborhood briefs — anyone who wants
-          clearer context before a move.
+          Expecting parents comparing cities, families weighing a relocation, and anyone who wants
+          a clearer multi-year picture of childcare, housing, and everyday kid costs by location.
         </p>
       </LegalSection>
 
@@ -75,14 +73,14 @@ export default function AboutPage() {
         <p>
           Questions, feedback, or partnership inquiries:
           <br />
-          <a href="mailto:support@beforeyoumovethere.com" className="text-emerald-700 underline">
-            support@beforeyoumovethere.com
+          <a href="mailto:support@costofparenting.com" className="text-teal-700 underline">
+            support@costofparenting.com
           </a>
         </p>
         <p>
           For privacy-specific requests, email{" "}
-          <a href="mailto:privacy@beforeyoumovethere.com" className="text-emerald-700 underline">
-            privacy@beforeyoumovethere.com
+          <a href="mailto:privacy@costofparenting.com" className="text-teal-700 underline">
+            privacy@costofparenting.com
           </a>
           .
         </p>

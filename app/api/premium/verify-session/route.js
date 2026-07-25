@@ -1,5 +1,6 @@
 import { auth } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
+import { parseCheckoutSummary } from "../../../utils/checkoutScenario";
 import {
   grantPremiumAccess,
   isPaidCheckoutSession,
@@ -51,7 +52,14 @@ export async function POST(request) {
           : session.payment_intent?.id || null,
     });
 
-    return NextResponse.json({ premium: true });
+    const summary = parseCheckoutSummary(session.metadata || {});
+
+    return NextResponse.json({
+      premium: true,
+      summary,
+      amountTotal: session.amount_total ?? 2900,
+      currency: session.currency || "usd",
+    });
   } catch (error) {
     console.error("[premium/verify-session] Failed:", error);
     return NextResponse.json(

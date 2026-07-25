@@ -6,14 +6,14 @@ export const FREE_PLAN = {
   price: "$0",
   period: "forever",
   description:
-    "Open-access neighborhood scores before you commit to a move — no credit card required.",
+    "Open city baselines for childcare, housing, food, and healthcare — no credit card required.",
   features: [
-    "Safety, noise, school & air quality scores",
-    "Search any US neighborhood",
-    "Premium deep-dive preview (locked)",
-    "Ads supported",
+    "City cost baselines for curated metros",
+    "Category share & annual snapshot",
+    "Premium forecast preview (locked)",
+    "Ads supported on the free tier",
   ],
-  cta: "Start Free",
+  cta: "Browse free baselines",
 };
 
 export const PREMIUM_PLAN = {
@@ -21,14 +21,14 @@ export const PREMIUM_PLAN = {
   price: PREMIUM_PRICE,
   period: PREMIUM_PERIOD,
   description:
-    "One payment unlocks true cost, hazard, and commute intelligence on every neighborhood you research.",
+    "One payment unlocks hyper-localized 18-year parenting cost forecasts for every city you research.",
   features: [
-    "True Cost of Ownership matrix",
-    "Property tax trajectories & utility estimates",
-    "Flood, wildfire & insurance hazard checks",
-    "Custom commute & expense calculator",
-    "Agent-ready PDF neighborhood brief export",
-    "Unlimited US neighborhoods — forever",
+    "Age-banded cost multipliers (infant → teen)",
+    "18-year household outlook forecasts",
+    "Childcare, housing & healthcare breakdowns",
+    "Multi-child localized planning tools",
+    "Lifestyle scenario modeling",
+    "Unlimited US cities — forever",
   ],
   cta: "Get Lifetime Pass",
   badge: "Best Value",

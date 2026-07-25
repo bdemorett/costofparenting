@@ -1,4 +1,4 @@
-const DEFAULT_SITE_URL = "https://beforeyoumovethere.com";
+const DEFAULT_SITE_URL = "https://costofparenting.com";
 
 /**
  * Normalizes site URL env values that may have been pasted as Markdown links

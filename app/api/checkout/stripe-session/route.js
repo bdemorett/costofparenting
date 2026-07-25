@@ -1,14 +1,8 @@
 import { auth, currentUser } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
+import { buildCheckoutScenario } from "../../../utils/checkoutScenario";
 import { getSiteUrl } from "../../../utils/siteUrl";
 import { getStripeClient } from "../../../utils/stripe";
-
-function normalizeCityContext(value) {
-  return String(value || "")
-    .trim()
-    .replace(/^\/+/, "")
-    .replace(/\/+$/, "");
-}
 
 export async function POST(request) {
   const { userId } = await auth();
@@ -33,18 +27,25 @@ export async function POST(request) {
     return NextResponse.json({ error: "Invalid request body." }, { status: 400 });
   }
 
-  const cityContext = normalizeCityContext(body.cityContext || body.cityId) || "general";
-
+  const scenario = buildCheckoutScenario(body);
   const siteUrl = getSiteUrl(request);
-  const isReportCheckout =
-    cityContext !== "general" && cityContext.includes("/");
 
-  const successUrl = isReportCheckout
-    ? `${siteUrl}/move-to/${cityContext}?success=true&session_id={CHECKOUT_SESSION_ID}`
-    : `${siteUrl}/pricing/success?session_id={CHECKOUT_SESSION_ID}`;
-  const cancelUrl = isReportCheckout
-    ? `${siteUrl}/move-to/${cityContext}`
+  // PDF / calculator checkouts always land on success with a summary.
+  // Generic pricing CTAs also use the success page.
+  const successUrl = `${siteUrl}/pricing/success?session_id={CHECKOUT_SESSION_ID}`;
+  const cancelUrl = scenario.hasCityPath
+    ? `${siteUrl}/cost-of-parenting/${scenario.cityContext}`
     : `${siteUrl}/pricing`;
+
+  const productName =
+    scenario.intent === "pdf_report"
+      ? "Cost of Parenting — Detailed PDF Budget Report + Lifetime Premium"
+      : "Cost of Parenting - Lifetime Premium Access Pass";
+
+  const productDescription =
+    scenario.intent === "pdf_report"
+      ? `Lifetime premium access plus a detailed budget report for ${scenario.metadata.cityLabel || "your city"}`
+      : "One-time lifetime premium access to localized parenting cost forecasts";
 
   try {
     const stripe = getStripeClient();
@@ -59,8 +60,8 @@ export async function POST(request) {
             currency: "usd",
             unit_amount: 2900,
             product_data: {
-              name: "Before You Move There - Lifetime Premium Access Pass",
-              description: "One-time lifetime premium access to neighborhood intelligence",
+              name: productName,
+              description: productDescription,
             },
           },
         },
@@ -68,7 +69,7 @@ export async function POST(request) {
       metadata: {
         userId,
         userEmail,
-        cityContext,
+        ...scenario.metadata,
       },
       success_url: successUrl,
       cancel_url: cancelUrl,
@@ -81,7 +82,10 @@ export async function POST(request) {
       );
     }
 
-    return NextResponse.json({ url: session.url }, { status: 200 });
+    return NextResponse.json(
+      { url: session.url, sessionId: session.id },
+      { status: 200 },
+    );
   } catch (error) {
     console.error("[stripe-session] Stripe session error:", error);
     return NextResponse.json(

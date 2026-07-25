@@ -6,15 +6,16 @@ import {
   isAdSenseUnitReady,
 } from "../utils/adsense";
 
-function AdPlaceholder({ label, className = "", theme = "dark" }) {
+function AdPlaceholder({ label, className = "", theme = "light" }) {
   const styles =
     theme === "light"
-      ? "border-dashed border-slate-300 bg-slate-100 text-slate-500"
-      : "border-dashed border-white/15 bg-slate-900/60 text-slate-500";
+      ? "border-dashed border-stone-300 bg-cream-muted text-stone-500"
+      : "border-dashed border-stone-600 bg-stone-900/60 text-stone-400";
 
   return (
     <aside
-      className={`flex min-h-[90px] w-full items-center justify-center rounded-xl border text-xs font-mono tracking-wider ${styles} ${className}`}
+      className={`flex min-h-[100px] w-full items-center justify-center rounded-2xl border text-xs font-mono tracking-wider ${styles} ${className}`}
+      style={{ minHeight: 100 }}
       aria-label="Advertisement"
     >
       {label}
@@ -28,7 +29,7 @@ export default function AdSenseUnit({
   fullWidthResponsive = true,
   className = "",
   placeholderLabel = "Advertisement",
-  theme = "dark",
+  theme = "light",
 }) {
   const pushedRef = useRef(false);
   const clientId = getAdSenseClientId();
@@ -52,10 +53,14 @@ export default function AdSenseUnit({
   }
 
   return (
-    <aside className={className} aria-label="Advertisement">
+    <aside
+      className={`relative w-full overflow-hidden ${className}`}
+      style={{ minHeight: 100 }}
+      aria-label="Advertisement"
+    >
       <ins
-        className="adsbygoogle block min-h-[90px] w-full"
-        style={{ display: "block" }}
+        className="adsbygoogle block min-h-[100px] w-full"
+        style={{ display: "block", minHeight: 100 }}
         data-ad-client={clientId}
         data-ad-slot={slot}
         data-ad-format={format}

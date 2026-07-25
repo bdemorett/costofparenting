@@ -1,8 +1,8 @@
 import LegalPageLayout, { LegalSection } from "../components/LegalPageLayout";
 
 export const metadata = {
-  title: "Terms of Service — Before You Move There",
-  description: "Terms governing your use of Before You Move There.",
+  title: "Terms of Service",
+  description: "Terms governing your use of Cost of Parenting.",
 };
 
 const UPDATED = "July 10, 2026";
@@ -11,26 +11,29 @@ export default function TermsOfServicePage() {
   return (
     <LegalPageLayout
       title="Terms of Service"
-      description="Please read these terms carefully before using Before You Move There."
+      description="Please read these terms carefully before using Cost of Parenting."
       updatedAt={UPDATED}
     >
       <LegalSection title="1. Agreement">
         <p>
-          By accessing or using Before You Move There (&ldquo;the Service&rdquo;), you agree to
-          these Terms of Service (&ldquo;Terms&rdquo;). If you do not agree, do not use the Service.
+          By accessing or using Cost of Parenting (&ldquo;the Service,&rdquo;
+          &ldquo;Company,&rdquo; &ldquo;we,&rdquo; &ldquo;us,&rdquo; or
+          &ldquo;our&rdquo;), you agree to these Terms of Service
+          (&ldquo;Terms&rdquo;). If you do not agree, do not use the
+          Service.
         </p>
       </LegalSection>
 
       <LegalSection title="2. The Service">
         <p>
-          Before You Move There provides neighborhood intelligence tools, including safety, school,
-          noise, environmental, and premium relocation insights for locations in the United States.
-          We offer a free tier with open-access scores and a paid Lifetime Premium Pass with
-          additional features.
+          Cost of Parenting provides localized parenting cost tools, including city baselines,
+          age-band multipliers, multi-year outlook forecasts, and related location insights for
+          the United States. We offer a free tier with open-access scores and a paid Lifetime
+          Premium Pass with additional features.
         </p>
         <p>
           The Service is provided for informational purposes only. It is not legal, financial,
-          real-estate, insurance, or professional relocation advice. You are responsible for
+          childcare, insurance, or professional advice. You are responsible for
           verifying information independently before making decisions.
         </p>
       </LegalSection>
@@ -70,8 +73,8 @@ export default function TermsOfServicePage() {
         <p>
           Except where required by law, all sales are final. If you believe a charge was made in
           error, contact{" "}
-          <a href="mailto:support@beforeyoumovethere.com" className="text-emerald-700 underline">
-            support@beforeyoumovethere.com
+          <a href="mailto:support@costofparenting.com" className="text-teal-700 underline">
+            support@costofparenting.com
           </a>{" "}
           within 14 days of purchase and we will review your request.
         </p>
@@ -105,7 +108,7 @@ export default function TermsOfServicePage() {
       <LegalSection title="8. Intellectual property">
         <p>
           The Service, including its design, text, graphics, software, and branding, is owned by
-          Before You Move There or its licensors and is protected by applicable intellectual
+          Cost of Parenting or its licensors and is protected by applicable intellectual
           property laws. You receive a limited, non-exclusive, non-transferable license to use the
           Service for personal, non-commercial research unless we agree otherwise in writing.
         </p>
@@ -113,10 +116,10 @@ export default function TermsOfServicePage() {
 
       <LegalSection title="9. Limitation of liability">
         <p>
-          TO THE MAXIMUM EXTENT PERMITTED BY LAW, BEFORE YOU MOVE THERE AND ITS AFFILIATES, OFFICERS,
-          EMPLOYEES, AND SUPPLIERS WILL NOT BE LIABLE FOR ANY INDIRECT, INCIDENTAL, SPECIAL,
-          CONSEQUENTIAL, OR PUNITIVE DAMAGES, OR ANY LOSS OF PROFITS, DATA, OR GOODWILL, ARISING
-          FROM YOUR USE OF THE SERVICE.
+          TO THE MAXIMUM EXTENT PERMITTED BY LAW, COST OF PARENTING AND ITS AFFILIATES,
+          OFFICERS, EMPLOYEES, AND SUPPLIERS WILL NOT BE LIABLE FOR ANY
+          INDIRECT, INCIDENTAL, SPECIAL, CONSEQUENTIAL, OR PUNITIVE DAMAGES, OR ANY LOSS OF
+          PROFITS, DATA, OR GOODWILL, ARISING FROM YOUR USE OF THE SERVICE.
         </p>
         <p>
           OUR TOTAL LIABILITY FOR ANY CLAIM ARISING OUT OF THESE TERMS OR THE SERVICE WILL NOT
@@ -127,8 +130,9 @@ export default function TermsOfServicePage() {
 
       <LegalSection title="10. Indemnification">
         <p>
-          You agree to indemnify and hold harmless Before You Move There from claims, damages, and
-          expenses arising from your misuse of the Service or violation of these Terms.
+          You agree to indemnify and hold harmless Cost of Parenting
+          from claims, damages, and expenses arising from your misuse of the Service or violation
+          of these Terms.
         </p>
       </LegalSection>
 
@@ -157,11 +161,11 @@ export default function TermsOfServicePage() {
 
       <LegalSection title="14. Contact">
         <p>
-          Before You Move There
+          Cost of Parenting
           <br />
           Email:{" "}
-          <a href="mailto:support@beforeyoumovethere.com" className="text-emerald-700 underline">
-            support@beforeyoumovethere.com
+          <a href="mailto:support@costofparenting.com" className="text-teal-700 underline">
+            support@costofparenting.com
           </a>
         </p>
       </LegalSection>

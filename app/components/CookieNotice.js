@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 
-const STORAGE_KEY = "bymt-cookie-notice-dismissed";
+const STORAGE_KEY = "costofparenting-cookie-notice-dismissed";
 
 export default function CookieNotice() {
   const [visible, setVisible] = useState(false);
@@ -30,15 +30,15 @@ export default function CookieNotice() {
 
   return (
     <div
-      className="fixed inset-x-0 bottom-0 z-50 border-t border-slate-200 bg-white/95 px-4 py-4 shadow-lg backdrop-blur-sm"
+      className="fixed inset-x-0 bottom-0 z-50 border-t border-stone-200/60 bg-cream/95 px-4 py-4 shadow-lg backdrop-blur-sm"
       role="dialog"
       aria-label="Cookie notice"
     >
       <div className="mx-auto flex max-w-5xl flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <p className="text-sm leading-relaxed text-slate-600">
+        <p className="text-sm leading-relaxed text-stone-600">
           We use cookies for sign-in, site functionality, and advertising on our
           free tier. See our{" "}
-          <Link href="/privacy-policy" className="font-medium text-emerald-700 underline">
+          <Link href="/privacy-policy" className="font-medium text-teal-800 underline">
             Privacy Policy
           </Link>{" "}
           for details, including how Google AdSense may use cookies.
@@ -46,7 +46,7 @@ export default function CookieNotice() {
         <button
           type="button"
           onClick={dismiss}
-          className="shrink-0 rounded-lg bg-emerald-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-emerald-700"
+          className="shrink-0 rounded-full bg-teal-700 px-6 py-3 text-sm font-medium text-white transition-all hover:bg-teal-800"
         >
           Got it
         </button>

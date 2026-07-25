@@ -1,0 +1,53 @@
+---
+description: Cost of Parenting stack, SEO routes, types, AdSense CLS, and RSC defaults
+alwaysApply: true
+---
+
+# Cost of Parenting
+
+## Stack
+
+Next.js App Router, TypeScript, Tailwind CSS, Stripe, Clerk, Google AdSense.
+
+## Programmatic SEO
+
+- Prioritize performance on `app/cost-of-parenting/[state]/[city]/`.
+- Prefer ISR / static params and lean server rendering for city pages.
+- Keep auth and interactive forecasting client-side; public baselines stay cacheable.
+
+## Types & data
+
+- Use modular types from `types/parenting.ts`.
+- Avoid giant inline arrays in components/pages.
+- Keep data fetches and curated datasets in `app/data/` or `lib/`.
+
+## AdSense & monetization
+
+- Reserve fixed space for ad containers to prevent CLS.
+- Do not collapse or shift layout when ads load or fail.
+- Free-tier surfaces may show ads; Premium flows must not break layout around them.
+
+## Components
+
+- Default to Server Components.
+- Add `"use client"` only when hooks (`useState`, `useEffect`, etc.) or browser APIs are required.
+- Keep interactive calculator/paywall UI modular and separate from SEO page shells.
+
+```tsx
+// ❌ BAD — client page just for layout
+"use client";
+export default function CityPage() { return <main>...</main>; }
+
+// ✅ GOOD — server page + client island
+export default async function CityPage({ params }) {
+  const baseline = getSafeLocationBaseline(...);
+  return (
+    <main>
+      <CostExperienceProvider baseline={baseline}>
+        <FamilyCostConsole />
+        <CostDataFeed />
+      </CostExperienceProvider>
+    </main>
+  );
+}
+```

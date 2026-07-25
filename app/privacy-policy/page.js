@@ -1,9 +1,9 @@
 import LegalPageLayout, { LegalSection } from "../components/LegalPageLayout";
 
 export const metadata = {
-  title: "Privacy Policy — Before You Move There",
+  title: "Privacy Policy",
   description:
-    "How Before You Move There collects, uses, and protects your information.",
+    "How Cost of Parenting collects, uses, and protects your information.",
 };
 
 const UPDATED = "July 10, 2026";
@@ -17,17 +17,18 @@ export default function PrivacyPolicyPage() {
     >
       <LegalSection title="1. Who we are">
         <p>
-          Before You Move There (&ldquo;we,&rdquo; &ldquo;us,&rdquo; or &ldquo;our&rdquo;) operates{" "}
-          <a href="https://www.beforeyoumovethere.com" className="text-emerald-700 underline">
-            beforeyoumovethere.com
+          Cost of Parenting (&ldquo;we,&rdquo; &ldquo;us,&rdquo; or
+          &ldquo;our&rdquo;) operates{" "}
+          <a href="https://www.costofparenting.com" className="text-teal-700 underline">
+            costofparenting.com
           </a>
-          , a neighborhood intelligence service for people researching places to live in the United
-          States.
+          , a parenting cost and localization service that helps families estimate the real
+          cost of raising kids by city in the United States.
         </p>
         <p>
           Questions about this policy can be sent to{" "}
-          <a href="mailto:privacy@beforeyoumovethere.com" className="text-emerald-700 underline">
-            privacy@beforeyoumovethere.com
+          <a href="mailto:privacy@costofparenting.com" className="text-teal-700 underline">
+            privacy@costofparenting.com
           </a>
           .
         </p>
@@ -84,7 +85,7 @@ export default function PrivacyPolicyPage() {
           You can learn more about how Google uses data from partner sites and apps in{" "}
           <a
             href="https://policies.google.com/technologies/partner-sites"
-            className="text-emerald-700 underline"
+            className="text-teal-700 underline"
             rel="noopener noreferrer"
             target="_blank"
           >
@@ -93,7 +94,7 @@ export default function PrivacyPolicyPage() {
           . Google&apos;s advertising policies are available at{" "}
           <a
             href="https://policies.google.com/technologies/ads"
-            className="text-emerald-700 underline"
+            className="text-teal-700 underline"
             rel="noopener noreferrer"
             target="_blank"
           >
@@ -105,7 +106,7 @@ export default function PrivacyPolicyPage() {
           You may opt out of personalized advertising from Google by visiting{" "}
           <a
             href="https://adssettings.google.com"
-            className="text-emerald-700 underline"
+            className="text-teal-700 underline"
             rel="noopener noreferrer"
             target="_blank"
           >
@@ -114,7 +115,7 @@ export default function PrivacyPolicyPage() {
           . You can also visit{" "}
           <a
             href="https://www.aboutads.info"
-            className="text-emerald-700 underline"
+            className="text-teal-700 underline"
             rel="noopener noreferrer"
             target="_blank"
           >
@@ -164,8 +165,8 @@ export default function PrivacyPolicyPage() {
         <p>
           Depending on where you live, you may have rights to access, correct, delete, or export
           personal information, or to object to certain processing. To make a request, email{" "}
-          <a href="mailto:privacy@beforeyoumovethere.com" className="text-emerald-700 underline">
-            privacy@beforeyoumovethere.com
+          <a href="mailto:privacy@costofparenting.com" className="text-teal-700 underline">
+            privacy@costofparenting.com
           </a>
           . We may need to verify your identity before fulfilling a request.
         </p>
@@ -201,11 +202,11 @@ export default function PrivacyPolicyPage() {
 
       <LegalSection title="11. Contact">
         <p>
-          Before You Move There
+          Cost of Parenting
           <br />
           Email:{" "}
-          <a href="mailto:privacy@beforeyoumovethere.com" className="text-emerald-700 underline">
-            privacy@beforeyoumovethere.com
+          <a href="mailto:privacy@costofparenting.com" className="text-teal-700 underline">
+            privacy@costofparenting.com
           </a>
         </p>
       </LegalSection>

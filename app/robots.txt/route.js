@@ -6,7 +6,7 @@ export async function GET(request) {
   const body = `User-agent: *
 Allow: /
 
-Sitemap: ${siteUrl}/sitemap.xml
+Sitemap: ${siteUrl}/sitemap-index.xml
 `;
 
   return new Response(body, {

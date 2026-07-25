@@ -5,17 +5,30 @@ import { useState } from "react";
 
 const variantStyles = {
   lightPrimary:
-    "bg-emerald-600 text-white hover:bg-emerald-700 disabled:cursor-not-allowed disabled:opacity-60",
+    "rounded-full bg-teal-700 px-6 py-3 text-sm font-medium text-white transition-all hover:bg-teal-800 disabled:cursor-not-allowed disabled:opacity-60",
   lightOutline:
-    "border border-slate-200 bg-white text-slate-800 hover:border-slate-300 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-60",
+    "rounded-full border border-stone-200 bg-white px-6 py-3 text-sm font-medium text-stone-800 transition-all hover:border-teal-700/40 hover:text-teal-900 disabled:cursor-not-allowed disabled:opacity-60",
   darkPrimary:
-    "bg-emerald-500 text-white hover:bg-emerald-400 disabled:cursor-not-allowed disabled:opacity-60",
+    "rounded-full bg-teal-700 px-6 py-3 text-sm font-medium text-white transition-all hover:bg-teal-800 disabled:cursor-not-allowed disabled:opacity-60",
   darkOutline:
-    "border border-white/20 bg-white/5 text-white hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-60",
+    "rounded-full border border-stone-300 bg-cream px-6 py-3 text-sm font-medium text-stone-800 transition-all hover:border-teal-700/40 hover:text-teal-900 disabled:cursor-not-allowed disabled:opacity-60",
 };
 
+/**
+ * Starts Stripe Checkout. Pass `scenario` for calculator metadata
+ * (city, kids, monthly/annual totals, intent).
+ *
+ * @param {object} props
+ * @param {string} [props.cityContext]
+ * @param {Record<string, unknown> | null} [props.scenario]
+ * @param {string} [props.className]
+ * @param {import("react").ReactNode} [props.children]
+ * @param {keyof typeof variantStyles} [props.variant]
+ * @param {boolean} [props.disabled]
+ */
 export default function PremiumCheckoutButton({
   cityContext = "general",
+  scenario = undefined,
   className = "",
   children = "Get Lifetime Pass",
   variant = "lightPrimary",
@@ -48,10 +61,15 @@ export default function PremiumCheckoutButton({
     setIsLoading(true);
 
     try {
+      const payload = {
+        cityContext,
+        ...(scenario && typeof scenario === "object" ? scenario : {}),
+      };
+
       const response = await fetch("/api/checkout/stripe-session", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ cityContext }),
+        body: JSON.stringify(payload),
       });
 
       const data = await response.json();
@@ -72,7 +90,7 @@ export default function PremiumCheckoutButton({
       type="button"
       onClick={handleCheckout}
       disabled={disabled || isLoading || !isLoaded}
-      className={`block w-full rounded-xl py-4 text-center text-sm font-bold transition ${variantStyles[variant] || variantStyles.lightPrimary} ${className}`}
+      className={`block w-full text-center ${variantStyles[variant] || variantStyles.lightPrimary} ${className}`}
     >
       {label}
     </button>

@@ -1,52 +1,37 @@
 import Link from "next/link";
 import PremiumCheckoutButton from "../components/PremiumCheckoutButton";
+import Footer from "@/components/Footer";
+import Navbar from "@/components/Navbar";
 import { FREE_PLAN, PREMIUM_PLAN } from "../utils/pricing";
 
 export const metadata = {
-  title: "Pricing — Before You Move There",
+  title: "Pricing",
   description:
-    "Free neighborhood previews and a $29 lifetime premium pass for true cost, hazard, and commute intelligence.",
+    "Free location cost previews and a $29 lifetime premium pass for hyper-localized 18-year parenting cost forecasts.",
 };
 
 export default function PricingPage() {
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100">
-      <header className="border-b border-white/10 bg-slate-950/80 backdrop-blur-md">
-        <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
-          <Link href="/" className="flex items-center gap-2">
-            <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-emerald-500 text-sm font-bold text-white">
-              BY
-            </span>
-            <span className="text-lg font-semibold tracking-tight text-white">
-              Before You Move There
-            </span>
-          </Link>
-          <Link
-            href="/"
-            className="text-sm font-medium text-slate-400 transition hover:text-emerald-400"
-          >
-            Back to search
-          </Link>
-        </div>
-      </header>
+    <div className="min-h-screen bg-cream text-stone-700">
+      <Navbar />
 
-      <main className="mx-auto max-w-6xl px-6 py-16 sm:py-24">
-        <div className="text-center">
-          <p className="inline-flex items-center gap-2 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-4 py-1.5 text-sm font-medium text-emerald-300">
-            <span className="h-2 w-2 rounded-full bg-emerald-400" />
+      <main className="mx-auto max-w-6xl px-5 py-12 sm:px-8 sm:py-16 lg:py-20">
+        <div className="mx-auto max-w-2xl text-center">
+          <p className="inline-flex items-center gap-2 rounded-full border border-teal-200 bg-teal-50 px-4 py-1.5 text-sm font-medium text-teal-800">
+            <span className="h-2 w-2 rounded-full bg-teal-700" />
             One price. Lifetime access.
           </p>
-          <h1 className="mt-6 text-4xl font-bold tracking-tight text-white sm:text-5xl lg:text-6xl">
+          <h1 className="font-serif mt-5 text-4xl font-semibold tracking-tight text-stone-900 sm:mt-6 sm:text-5xl">
             Pay once,
-            <span className="block text-emerald-400">research forever</span>
+            <span className="block text-teal-800">plan for eighteen years</span>
           </h1>
-          <p className="mx-auto mt-6 max-w-2xl text-lg leading-relaxed text-slate-400">
-            Start free with open-access neighborhood scores. Unlock the full relocation brief
-            with a single $29 lifetime pass — no subscriptions, no surprise renewals.
+          <p className="mt-5 text-base leading-relaxed text-stone-600 sm:text-lg">
+            City baselines stay free. Unlock a full hyper-localized parenting cost
+            forecast with a single $29 lifetime pass — no subscriptions.
           </p>
         </div>
 
-        <div className="mx-auto mt-16 grid max-w-4xl gap-8 lg:grid-cols-2">
+        <div className="mx-auto mt-12 grid max-w-4xl gap-6 sm:mt-14 sm:gap-8 lg:grid-cols-2">
           <PricingCard
             name={FREE_PLAN.name}
             price={FREE_PLAN.price}
@@ -54,7 +39,7 @@ export default function PricingPage() {
             description={FREE_PLAN.description}
             features={FREE_PLAN.features}
             cta={FREE_PLAN.cta}
-            ctaHref="/#preview"
+            ctaHref="/cost-of-parenting/tx/austin"
             highlighted={false}
           />
           <PricingCard
@@ -67,7 +52,7 @@ export default function PricingPage() {
             highlighted={true}
             badge={PREMIUM_PLAN.badge}
             ctaElement={
-              <PremiumCheckoutButton variant="darkPrimary">
+              <PremiumCheckoutButton variant="lightPrimary">
                 {PREMIUM_PLAN.cta}
               </PremiumCheckoutButton>
             }
@@ -75,44 +60,41 @@ export default function PricingPage() {
         </div>
 
         <div className="mx-auto mt-16 max-w-2xl text-center">
-          <p className="text-sm text-slate-500">
-            One-time payment · Lifetime access on your account · Secure checkout via Stripe
+          <p className="text-sm text-stone-500">
+            One-time payment · Lifetime access on your account · Secure checkout via
+            Stripe
           </p>
-          <div className="mt-6 flex flex-wrap items-center justify-center gap-6 text-xs font-medium uppercase tracking-wider text-slate-600">
+          <div className="mt-6 flex flex-wrap items-center justify-center gap-6 text-xs font-medium uppercase tracking-wider text-stone-500">
             <span className="flex items-center gap-2">
-              <svg className="h-4 w-4 text-emerald-500" fill="currentColor" viewBox="0 0 20 20">
-                <path
-                  fillRule="evenodd"
-                  d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                  clipRule="evenodd"
-                />
-              </svg>
+              <TrustIcon />
               SSL encrypted
             </span>
             <span className="flex items-center gap-2">
-              <svg className="h-4 w-4 text-emerald-500" fill="currentColor" viewBox="0 0 20 20">
-                <path
-                  fillRule="evenodd"
-                  d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                  clipRule="evenodd"
-                />
-              </svg>
+              <TrustIcon />
               No hidden fees
             </span>
             <span className="flex items-center gap-2">
-              <svg className="h-4 w-4 text-emerald-500" fill="currentColor" viewBox="0 0 20 20">
-                <path
-                  fillRule="evenodd"
-                  d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                  clipRule="evenodd"
-                />
-              </svg>
+              <TrustIcon />
               Instant access
             </span>
           </div>
         </div>
       </main>
+
+      <Footer />
     </div>
+  );
+}
+
+function TrustIcon() {
+  return (
+    <svg className="h-4 w-4 text-teal-700" fill="currentColor" viewBox="0 0 20 20">
+      <path
+        fillRule="evenodd"
+        d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+        clipRule="evenodd"
+      />
+    </svg>
   );
 }
 
@@ -130,28 +112,30 @@ function PricingCard({
 }) {
   return (
     <article
-      className={`relative flex flex-col rounded-3xl border p-8 sm:p-10 ${
+      className={`relative flex flex-col rounded-2xl border p-6 shadow-pillow sm:p-8 ${
         highlighted
-          ? "border-emerald-500/50 bg-gradient-to-b from-emerald-950/50 to-slate-900 shadow-2xl shadow-emerald-900/20 ring-2 ring-emerald-500/30"
-          : "border-white/10 bg-slate-900/80 shadow-xl"
+          ? "border-teal-200 bg-white ring-2 ring-teal-700/15"
+          : "border-stone-200/60 bg-white"
       }`}
     >
       {badge && (
-        <span className="absolute -top-3.5 left-1/2 -translate-x-1/2 rounded-full bg-emerald-500 px-4 py-1 text-xs font-bold uppercase tracking-wider text-white shadow-lg shadow-emerald-900/40">
+        <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-teal-700 px-3.5 py-1 text-[11px] font-semibold uppercase tracking-wider text-white shadow-sm">
           {badge}
         </span>
       )}
-      <h2 className="text-xl font-semibold text-white">{name}</h2>
-      <div className="mt-4 flex items-baseline gap-1">
-        <span className="text-5xl font-bold tracking-tight text-white">{price}</span>
-        <span className="text-slate-400">/{period}</span>
+      <h2 className="font-serif text-xl font-semibold text-stone-900">{name}</h2>
+      <div className="mt-3 flex items-baseline gap-1">
+        <span className="font-serif text-4xl font-semibold tracking-tight text-stone-900 sm:text-5xl">
+          {price}
+        </span>
+        <span className="font-sans text-sm text-stone-500">/{period}</span>
       </div>
-      <p className="mt-4 text-sm leading-relaxed text-slate-400">{description}</p>
-      <ul className="mt-8 flex-1 space-y-3.5">
+      <p className="mt-3 text-sm leading-relaxed text-stone-600">{description}</p>
+      <ul className="mt-6 flex-1 space-y-3">
         {features.map((feature) => (
-          <li key={feature} className="flex items-start gap-3 text-sm text-slate-300">
+          <li key={feature} className="flex items-start gap-3 text-sm text-stone-700">
             <svg
-              className={`mt-0.5 h-5 w-5 shrink-0 ${highlighted ? "text-emerald-400" : "text-slate-500"}`}
+              className={`mt-0.5 h-5 w-5 shrink-0 ${highlighted ? "text-teal-700" : "text-stone-400"}`}
               fill="currentColor"
               viewBox="0 0 20 20"
               aria-hidden="true"
@@ -167,16 +151,9 @@ function PricingCard({
         ))}
       </ul>
       {ctaElement ? (
-        <div className="mt-8">{ctaElement}</div>
+        <div className="mt-7">{ctaElement}</div>
       ) : (
-        <Link
-          href={ctaHref}
-          className={`mt-8 block rounded-xl py-4 text-center text-sm font-bold transition ${
-            highlighted
-              ? "bg-emerald-500 text-white hover:bg-emerald-400"
-              : "border border-white/20 bg-white/5 text-white hover:bg-white/10"
-          }`}
-        >
+        <Link href={ctaHref} className="btn-pill-outline mt-7 w-full">
           {cta}
         </Link>
       )}

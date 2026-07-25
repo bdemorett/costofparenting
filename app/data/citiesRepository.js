@@ -4,16 +4,20 @@ import { toCitySlug } from "./sitemapCities";
 
 const CATALOG_PATH = path.join(process.cwd(), "app/data/sitemap-cities.json");
 
-/** Cached backup when the primary data source is unavailable. */
+/** Cached backup when the catalog file is unavailable. */
 export const SITEMAP_FALLBACK_CITIES = [
-  { slug: "austin-tx", updated_at: "2026-01-01T00:00:00.000Z" },
-  { slug: "miami-fl", updated_at: "2026-01-01T00:00:00.000Z" },
-  { slug: "nashville-tn", updated_at: "2026-01-01T00:00:00.000Z" },
-  { slug: "phoenix-az", updated_at: "2026-01-01T00:00:00.000Z" },
-  { slug: "tampa-fl", updated_at: "2026-01-01T00:00:00.000Z" },
-  { slug: "orlando-fl", updated_at: "2026-01-01T00:00:00.000Z" },
-  { slug: "charlotte-nc", updated_at: "2026-01-01T00:00:00.000Z" },
-  { slug: "dallas-tx", updated_at: "2026-01-01T00:00:00.000Z" },
+  { slug: "austin-tx", updated_at: "2026-01-15T00:00:00.000Z" },
+  { slug: "new-york-ny", updated_at: "2026-01-15T00:00:00.000Z" },
+  { slug: "los-angeles-ca", updated_at: "2026-01-15T00:00:00.000Z" },
+  { slug: "chicago-il", updated_at: "2026-01-15T00:00:00.000Z" },
+  { slug: "denver-co", updated_at: "2026-01-15T00:00:00.000Z" },
+  { slug: "seattle-wa", updated_at: "2026-01-15T00:00:00.000Z" },
+  { slug: "dallas-tx", updated_at: "2026-01-15T00:00:00.000Z" },
+  { slug: "miami-fl", updated_at: "2026-01-15T00:00:00.000Z" },
+  { slug: "boston-ma", updated_at: "2026-01-15T00:00:00.000Z" },
+  { slug: "atlanta-ga", updated_at: "2026-01-15T00:00:00.000Z" },
+  { slug: "phoenix-az", updated_at: "2026-01-15T00:00:00.000Z" },
+  { slug: "san-francisco-ca", updated_at: "2026-01-15T00:00:00.000Z" },
 ];
 
 function normalizeCityRow(entry, catalogUpdatedAt) {
@@ -31,7 +35,7 @@ function normalizeCityRow(entry, catalogUpdatedAt) {
   if (!slug) return null;
 
   return {
-    slug,
+    slug: String(slug).trim().toLowerCase(),
     updated_at: entry.updated_at || catalogUpdatedAt,
   };
 }
@@ -40,8 +44,12 @@ function dedupeCityRows(rows) {
   const seen = new Set();
 
   return rows.filter((row) => {
-    if (!row?.slug || seen.has(row.slug)) return false;
-    seen.add(row.slug);
+    const key = String(row?.slug || "")
+      .trim()
+      .toLowerCase();
+    if (!key || seen.has(key)) return false;
+    seen.add(key);
+    row.slug = key;
     return true;
   });
 }
@@ -65,7 +73,7 @@ async function fetchCitiesFromDatabase() {
 
     const rows = result.rows
       .map((row) => ({
-        slug: String(row.slug || "").trim(),
+        slug: String(row.slug || "").trim().toLowerCase(),
         updated_at: row.updated_at,
       }))
       .filter((row) => row.slug);
@@ -83,7 +91,10 @@ async function fetchCitiesFromDatabase() {
   }
 }
 
-async function fetchCitiesFromCatalogFile() {
+/**
+ * Reads every city/state route from `app/data/sitemap-cities.json`.
+ */
+export async function fetchCitiesFromCatalogFile() {
   const raw = await readFile(CATALOG_PATH, "utf8");
   const parsed = JSON.parse(raw);
   const catalogUpdatedAt =
@@ -98,19 +109,19 @@ async function fetchCitiesFromCatalogFile() {
 }
 
 /**
- * Loads lightweight sitemap rows (slug + updated_at only).
- * Prefers DATABASE_URL when configured; otherwise reads the local catalog JSON.
+ * Loads lightweight sitemap rows (slug + updated_at).
+ * Primary source: `sitemap-cities.json`. Optionally merges active DB cities.
  */
 export async function fetchActiveCitiesForSitemap() {
+  const catalogRows = await fetchCitiesFromCatalogFile();
+  if (!catalogRows.length) {
+    throw new Error("No active cities found in sitemap-cities.json.");
+  }
+
   const databaseRows = await fetchCitiesFromDatabase();
   if (databaseRows?.length) {
-    return databaseRows;
+    return dedupeCityRows([...catalogRows, ...databaseRows]);
   }
 
-  const catalogRows = await fetchCitiesFromCatalogFile();
-  if (catalogRows.length > 0) {
-    return catalogRows;
-  }
-
-  throw new Error("No active cities found in catalog file.");
+  return catalogRows;
 }

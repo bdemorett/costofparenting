@@ -41,6 +41,12 @@ export async function grantPremiumAccess(userId, details = {}) {
           null,
       },
     },
+    privateMetadata: {
+      ...(existing.privateMetadata && typeof existing.privateMetadata === "object"
+        ? existing.privateMetadata
+        : {}),
+      stripeSubscriptionStatus: "active",
+    },
   });
 }
 
