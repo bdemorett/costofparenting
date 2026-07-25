@@ -21,16 +21,16 @@ export default function CalculatorCtaCard({ cityLabel }: CalculatorCtaCardProps)
         Model your {cityLabel} household
       </h2>
       <p className="mt-2 max-w-2xl text-sm leading-relaxed text-stone-600 sm:text-base">
-        Use the Family Cost Console to set child ages, family size, and public vs
-        private childcare — then unlock an 18-year Premium forecast tailored to
-        this metro.
+        Use the interactive cost calculator to set child count, age stage, and
+        care type — then unlock an 18-year Premium forecast in the console below
+        when you&apos;re ready.
       </p>
       <div className="mt-5 flex flex-col gap-3 sm:flex-row sm:items-center">
         <a
-          href="#family-cost-console"
+          href="#cost-calculator"
           className="inline-flex items-center justify-center rounded-full bg-teal-700 px-6 py-3 text-sm font-medium text-white transition-all hover:bg-teal-800"
         >
-          Open calculator console
+          Open cost calculator
         </a>
         <a
           href="#cost-by-age"

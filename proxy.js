@@ -12,6 +12,16 @@ export default clerkMiddleware((auth, request) => {
     return NextResponse.redirect(destination, 308);
   }
 
+  // Legacy /compare/{city1}/vs/{city2} → /compare/{city1}-vs-{city2}
+  const legacyCompareMatch = pathname.match(
+    /^\/compare\/([a-z0-9-]+)\/vs\/([a-z0-9-]+)\/?$/i,
+  );
+  if (legacyCompareMatch) {
+    const destination = request.nextUrl.clone();
+    destination.pathname = `/compare/${legacyCompareMatch[1]}-vs-${legacyCompareMatch[2]}`;
+    return NextResponse.redirect(destination, 308);
+  }
+
   // Legacy compound /cities/{slug} → /cost-of-parenting/{state}/{city}
   const compoundCityMatch = pathname.match(/^\/cities\/([a-z0-9-]+)$/i);
   if (compoundCityMatch) {

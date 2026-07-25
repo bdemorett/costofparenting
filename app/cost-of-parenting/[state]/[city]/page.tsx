@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { notFound } from "next/navigation";
 import ClsSafeAdSlot from "@/components/ads/ClsSafeAdSlot";
 import { CostExperienceProvider } from "@/components/calculator/CostExperienceContext";
 import CostDataFeed from "@/components/calculator/CostDataFeed";
@@ -8,15 +9,13 @@ import AuthorityArticle from "@/components/content/AuthorityArticle";
 import CalculatorCtaCard from "@/components/content/CalculatorCtaCard";
 import CityGuideIntro from "@/components/content/CityGuideIntro";
 import NearbyCities from "@/components/content/NearbyCities";
+import CostCalculator from "@/components/calculator/CostCalculator";
 import Footer from "@/components/Footer";
 import Navbar from "@/components/Navbar";
 import JsonLd from "@/components/seo/JsonLd";
 import { buildCityPageJsonLd } from "@/lib/cityPageSchema";
-import {
-  getNearbyCities,
-  getSafeLocationBaseline,
-  LOCATION_BASELINES,
-} from "@/lib/mockData";
+import { getNearbyCities, LOCATION_BASELINES } from "@/lib/mockData";
+import type { LocationBaseline } from "@/types/parenting";
 import { normalizeSiteUrl } from "@/app/utils/siteUrl";
 
 /** Public cost pages stay on the edge cache for 7 days — auth stays client-side. */
@@ -74,6 +73,26 @@ function resolveLocationId(citySlug: string): string {
   return city;
 }
 
+/**
+ * Strict curated lookup — no silent fallback to another metro.
+ * Returns null when city or state does not match local baselines.
+ */
+function lookupCuratedCity(
+  stateSlug: string,
+  citySlug: string,
+): LocationBaseline | null {
+  const locationId = resolveLocationId(citySlug);
+  const baseline = LOCATION_BASELINES[locationId];
+  if (!baseline) return null;
+
+  const requestedState = normalizeState(stateSlug);
+  if (baseline.stateCode.toUpperCase() !== requestedState) {
+    return null;
+  }
+
+  return baseline;
+}
+
 export async function generateStaticParams() {
   return [
     { state: "tx", city: "austin" },
@@ -97,23 +116,46 @@ export async function generateMetadata({
   params: PageParams;
 }): Promise<Metadata> {
   const { state, city } = await params;
+  if (!lookupCuratedCity(state, city)) {
+    notFound();
+  }
+
   const cleanCity = deslugifyCity(city);
   const cleanState = normalizeState(state);
-  const locationId = resolveLocationId(city);
-  const baseline = getSafeLocationBaseline(locationId);
   const place = `${cleanCity}, ${cleanState}`;
+  const siteUrl = normalizeSiteUrl(process.env.NEXT_PUBLIC_SITE_URL);
+  const canonicalPath = `/cost-of-parenting/${state}/${city}`;
+  const canonicalUrl = `${siteUrl}${canonicalPath}`;
+  const ogImageUrl = `${siteUrl}${canonicalPath}/opengraph-image`;
+  const title = `Cost of Raising a Child in ${place} (2026 Calculator)`;
+  const description = `Detailed breakdown of childcare, housing, food, and education expenses to raise a child in ${place}. Calculate your estimated family budget.`;
+  const ogImages = [
+    {
+      url: ogImageUrl,
+      width: 1200,
+      height: 630,
+      alt: `Cost of raising a child in ${cleanCity}, ${cleanState}`,
+    },
+  ];
 
   return {
-    title: `Cost of Parenting in ${place} — Childcare, Housing & Healthcare Guide`,
-    description: `Stage-based costs for raising kids in ${place}: infant, toddler, and school-age childcare, housing jump, food, and healthcare. Free baselines plus Premium 18-year forecasts.`,
+    title,
+    description,
     alternates: {
-      canonical: `/cost-of-parenting/${state}/${city}`,
+      canonical: canonicalUrl,
     },
     openGraph: {
-      title: `Cost of Parenting in ${place}`,
-      description: `Infant-to-school-age costs, housing differential, and healthcare factors for ${baseline.displayName}.`,
-      type: "article",
-      url: `/cost-of-parenting/${state}/${city}`,
+      type: "website",
+      title,
+      description,
+      url: canonicalUrl,
+      images: ogImages,
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: [ogImageUrl],
     },
   };
 }
@@ -124,13 +166,15 @@ export default async function CostOfParentingCityPage({
   params: PageParams;
 }) {
   const { state, city } = await params;
+  const baseline = lookupCuratedCity(state, city);
+  if (!baseline) {
+    notFound();
+  }
+
   const cleanCity = deslugifyCity(city);
   const cleanState = normalizeState(state);
-  const locationId = resolveLocationId(city);
-  const baseline = getSafeLocationBaseline(locationId);
   const cityLabel = baseline.displayName || `${cleanCity}, ${cleanState}`;
-  const knownCities = Object.keys(LOCATION_BASELINES);
-  const isCurated = knownCities.includes(baseline.locationId);
+  const isCurated = true;
   const siteUrl = normalizeSiteUrl(process.env.NEXT_PUBLIC_SITE_URL);
   const jsonLd = buildCityPageJsonLd({
     baseline,
@@ -141,6 +185,10 @@ export default async function CostOfParentingCityPage({
   });
   const cityName = cityLabel.split(",")[0]?.trim() || cleanCity;
   const nearbyCities = getNearbyCities(baseline.locationId, 6);
+  const comparePeer = nearbyCities[0];
+  const compareHref = comparePeer
+    ? `/compare/${baseline.locationId}-${(baseline.stateCode || cleanState).toLowerCase()}-vs-${comparePeer.citySlug}-${comparePeer.stateSlug}`
+    : "#nearby-cities-heading";
 
   return (
     <div className="min-h-screen bg-cream text-stone-700">
@@ -166,6 +214,24 @@ export default async function CostOfParentingCityPage({
 
         <div className="mt-8">
           <CalculatorCtaCard cityLabel={cityLabel} />
+        </div>
+
+        <div className="mt-8">
+          <CostCalculator
+            cityName={cityName}
+            stateName={cleanState}
+            stateSlug={state}
+            citySlug={city}
+            dataset={{
+              housing: baseline.annualCosts.housing,
+              food: baseline.annualCosts.food,
+              healthcare: baseline.annualCosts.healthcare,
+              childcare: baseline.annualCosts.childcare,
+              clothing: baseline.annualCosts.clothing,
+              education: baseline.annualCosts.education,
+            }}
+            compareHref={compareHref}
+          />
         </div>
 
         <CostExperienceProvider
