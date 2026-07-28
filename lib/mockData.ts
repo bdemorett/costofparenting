@@ -3,7 +3,6 @@ import type {
   AgeMultipliers,
   CareStageKey,
   CostBreakdown,
-  FoodAndSuppliesMonthly,
   HealthcareCostFactors,
   HousingDifferential,
   LocationBaseline,
@@ -11,6 +10,11 @@ import type {
   StageMonthlyCosts,
 } from "@/types/parenting";
 import { ageToCareStage } from "@/types/parenting";
+import {
+  expandMetroFromPeer,
+  METRO_EXPANSIONS,
+  type ScalableCitySeed,
+} from "@/lib/metroCatalog";
 
 /**
  * Global age multipliers relative to the elementary / school-age reference (1.0).
@@ -145,19 +149,7 @@ export function deriveAnnualCostsFromDeepBaseline(input: {
   };
 }
 
-type CitySeed = {
-  locationId: string;
-  displayName: string;
-  state: string;
-  stateCode: string;
-  updatedAt?: string;
-  stageMonthly: StageMonthlyCosts;
-  housing: Omit<HousingDifferential, "familyPremiumMonthly"> & {
-    familyPremiumMonthly?: number;
-  };
-  healthcare: HealthcareCostFactors;
-  foodAndSupplies: FoodAndSuppliesMonthly;
-};
+type CitySeed = ScalableCitySeed;
 
 function buildHousing(housing: CitySeed["housing"]): HousingDifferential {
   const familyPremiumMonthly =
@@ -210,8 +202,9 @@ function stage(
 /**
  * Hyper-realistic illustrative monthly baselines for major US metros.
  * Figures are planning samples for development / offline fallback — not quotes.
+ * Additional metros in `METRO_EXPANSIONS` are peer-scaled from these seeds.
  */
-const CITY_SEEDS: CitySeed[] = [
+const PRIMARY_CITY_SEEDS: CitySeed[] = [
   {
     locationId: "austin",
     displayName: "Austin, TX",
@@ -562,6 +555,22 @@ const CITY_SEEDS: CitySeed[] = [
   },
 ];
 
+const primaryById = Object.fromEntries(
+  PRIMARY_CITY_SEEDS.map((seed) => [seed.locationId, seed]),
+) as Record<string, CitySeed>;
+
+const EXPANDED_CITY_SEEDS: CitySeed[] = METRO_EXPANSIONS.map((expansion) => {
+  const peer = primaryById[expansion.peerId];
+  if (!peer) {
+    throw new Error(
+      `metroCatalog: missing peer seed "${expansion.peerId}" for ${expansion.locationId}`,
+    );
+  }
+  return expandMetroFromPeer(peer, expansion);
+});
+
+const CITY_SEEDS: CitySeed[] = [...PRIMARY_CITY_SEEDS, ...EXPANDED_CITY_SEEDS];
+
 function seedRecord(): Record<string, LocationBaseline> {
   const record: Record<string, LocationBaseline> = {};
   for (const citySeed of CITY_SEEDS) {
@@ -570,14 +579,7 @@ function seedRecord(): Record<string, LocationBaseline> {
   return record;
 }
 
-/**
- * Fully populated local baselines for development and offline fallback.
- * Each city includes stage monthly stacks, housing differential, healthcare,
- * food/supplies, and a derived school-age `annualCosts` for the forecast engine.
- */
-export const LOCATION_BASELINES: Record<string, LocationBaseline> = seedRecord();
-
-const LOCATION_ALIASES: Record<string, string> = {
+const MANUAL_LOCATION_ALIASES: Record<string, string> = {
   austin: "austin",
   "austin-tx": "austin",
   atx: "austin",
@@ -610,7 +612,31 @@ const LOCATION_ALIASES: Record<string, string> = {
   "san-francisco": "san-francisco",
   sf: "san-francisco",
   "san-francisco-ca": "san-francisco",
+  dc: "washington",
+  "washington-dc": "washington",
+  "washington-d-c": "washington",
 };
+
+function buildLocationAliases(
+  baselines: Record<string, LocationBaseline>,
+): Record<string, string> {
+  const aliases: Record<string, string> = { ...MANUAL_LOCATION_ALIASES };
+  for (const baseline of Object.values(baselines)) {
+    const id = baseline.locationId;
+    aliases[id] = id;
+    aliases[`${id}-${baseline.stateCode.toLowerCase()}`] = id;
+  }
+  return aliases;
+}
+
+/**
+ * Fully populated local baselines for development and offline fallback.
+ * Each city includes stage monthly stacks, housing differential, healthcare,
+ * food/supplies, and a derived school-age `annualCosts` for the forecast engine.
+ */
+export const LOCATION_BASELINES: Record<string, LocationBaseline> = seedRecord();
+
+const LOCATION_ALIASES = buildLocationAliases(LOCATION_BASELINES);
 
 const DEFAULT_LOCATION_ID = "austin";
 

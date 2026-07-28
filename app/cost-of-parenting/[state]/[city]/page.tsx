@@ -48,29 +48,25 @@ function normalizeState(segment: string): string {
 function resolveLocationId(citySlug: string): string {
   const city = citySlug.trim().toLowerCase();
 
+  if (city in LOCATION_BASELINES) return city;
+
   const aliases: Record<string, string> = {
     austin: "austin",
     "new-york": "new-york",
     nyc: "new-york",
     "los-angeles": "los-angeles",
     la: "los-angeles",
-    chicago: "chicago",
-    denver: "denver",
-    seattle: "seattle",
-    dallas: "dallas",
-    miami: "miami",
-    boston: "boston",
-    atlanta: "atlanta",
-    phoenix: "phoenix",
     "san-francisco": "san-francisco",
     sf: "san-francisco",
+    dc: "washington",
+    "washington-dc": "washington",
   };
 
   if (aliases[city]) return aliases[city];
-  if (city.includes("york")) return "new-york";
-  if (city.includes("austin")) return "austin";
-  if (city.includes("angeles")) return "los-angeles";
+  if (city.includes("york") && !city.includes("jersey")) return "new-york";
   if (city.includes("francisco")) return "san-francisco";
+  if (city.includes("angeles")) return "los-angeles";
+  if (city.includes("austin")) return "austin";
 
   return city;
 }
@@ -96,20 +92,10 @@ function lookupCuratedCity(
 }
 
 export async function generateStaticParams() {
-  return [
-    { state: "tx", city: "austin" },
-    { state: "ny", city: "new-york" },
-    { state: "ca", city: "los-angeles" },
-    { state: "il", city: "chicago" },
-    { state: "co", city: "denver" },
-    { state: "wa", city: "seattle" },
-    { state: "tx", city: "dallas" },
-    { state: "fl", city: "miami" },
-    { state: "ma", city: "boston" },
-    { state: "ga", city: "atlanta" },
-    { state: "az", city: "phoenix" },
-    { state: "ca", city: "san-francisco" },
-  ];
+  return Object.values(LOCATION_BASELINES).map((baseline) => ({
+    state: baseline.stateCode.toLowerCase(),
+    city: baseline.locationId,
+  }));
 }
 
 export async function generateMetadata({
