@@ -8,8 +8,10 @@ import AgeStageBreakdown from "@/components/content/AgeStageBreakdown";
 import AuthorityArticle from "@/components/content/AuthorityArticle";
 import CalculatorCtaCard from "@/components/content/CalculatorCtaCard";
 import CityGuideIntro from "@/components/content/CityGuideIntro";
+import ExpenseBreakdown from "@/components/content/ExpenseBreakdown";
 import NearbyCities from "@/components/content/NearbyCities";
 import CostCalculator from "@/components/calculator/CostCalculator";
+import RevenueEngine from "@/app/components/RevenueEngine";
 import Footer from "@/components/Footer";
 import Navbar from "@/components/Navbar";
 import JsonLd from "@/components/seo/JsonLd";
@@ -213,6 +215,30 @@ export default async function CostOfParentingCityPage({
         </div>
 
         <div className="mt-8">
+          <ExpenseBreakdown
+            cityName={cityName}
+            stateName={cleanState}
+            housing={baseline.annualCosts.housing}
+            childcare={baseline.annualCosts.childcare}
+            food={baseline.annualCosts.food}
+            transportation={baseline.annualCosts.transportation}
+            healthcare={baseline.annualCosts.healthcare}
+            clothing={baseline.annualCosts.clothing}
+            misc={
+              baseline.annualCosts.miscellaneous +
+              baseline.annualCosts.education
+            }
+            context={{
+              housingPremiumMonthly: baseline.housing.familyPremiumMonthly,
+              tenure: baseline.housing.tenure,
+              infantChildcareMonthly: baseline.stageMonthly.infant.childcare,
+              foodPerChildMonthly: baseline.foodAndSupplies.foodPerChild,
+              regionalHealthcareIndex: baseline.healthcare.regionalIndex,
+            }}
+          />
+        </div>
+
+        <div className="mt-8">
           <CalculatorCtaCard cityLabel={cityLabel} />
         </div>
 
@@ -231,6 +257,16 @@ export default async function CostOfParentingCityPage({
               education: baseline.annualCosts.education,
             }}
             compareHref={compareHref}
+          />
+        </div>
+
+        <div className="mt-8">
+          <RevenueEngine
+            cityName={cityName}
+            stateName={cleanState}
+            calculatedMonthlyCost={Math.round(
+              baseline.annualCosts.childcare / 12,
+            )}
           />
         </div>
 

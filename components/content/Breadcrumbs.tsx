@@ -17,7 +17,7 @@ export default function Breadcrumbs({
   cityName,
   citySlug,
 }: BreadcrumbsProps) {
-  const stateHref = `/cost-of-parenting/${stateSlug}`;
+  const stateHref = `/${stateSlug}`;
   const cityHref = `/cost-of-parenting/${stateSlug}/${citySlug}`;
 
   return (

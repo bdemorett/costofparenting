@@ -44,7 +44,7 @@ export function buildCityBreadcrumbList(input: CityPageSchemaInput) {
         "@type": "ListItem",
         position: 2,
         name: stateLabel,
-        item: `${siteUrl}/cost-of-parenting/${stateSlug}`,
+        item: `${siteUrl}/${stateSlug}`,
       },
       {
         "@type": "ListItem",

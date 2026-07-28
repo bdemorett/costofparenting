@@ -22,6 +22,14 @@ export default clerkMiddleware((auth, request) => {
     return NextResponse.redirect(destination, 308);
   }
 
+  // Short /{state}/{city} → /cost-of-parenting/{state}/{city}
+  const shortCityMatch = pathname.match(/^\/([a-z]{2})\/([a-z0-9-]+)\/?$/i);
+  if (shortCityMatch) {
+    const destination = request.nextUrl.clone();
+    destination.pathname = `/cost-of-parenting/${shortCityMatch[1].toLowerCase()}/${shortCityMatch[2].toLowerCase()}`;
+    return NextResponse.redirect(destination, 308);
+  }
+
   // Legacy compound /cities/{slug} → /cost-of-parenting/{state}/{city}
   const compoundCityMatch = pathname.match(/^\/cities\/([a-z0-9-]+)$/i);
   if (compoundCityMatch) {

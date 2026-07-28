@@ -51,6 +51,13 @@ export function resolveSitemapSiteUrl(request) {
 export const SITEMAP_STATIC_PAGES = [
   { path: "/pricing", priority: 0.8, changefreq: "monthly" },
   { path: "/about", priority: 0.8, changefreq: "monthly" },
+  { path: "/methodology", priority: 0.8, changefreq: "monthly" },
+  { path: "/tools", priority: 0.8, changefreq: "monthly" },
+  {
+    path: "/tools/can-we-afford-a-baby",
+    priority: 0.85,
+    changefreq: "monthly",
+  },
   { path: "/privacy-policy", priority: 0.8, changefreq: "monthly" },
   { path: "/terms-of-service", priority: 0.8, changefreq: "monthly" },
   { path: "/contact", priority: 0.6, changefreq: "monthly" },

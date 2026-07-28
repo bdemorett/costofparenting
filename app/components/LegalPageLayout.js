@@ -7,6 +7,7 @@ export default function LegalPageLayout({
   description,
   updatedAt,
   children,
+  eyebrow = "Legal",
 }) {
   return (
     <div className="min-h-screen bg-cream text-stone-700">
@@ -14,7 +15,7 @@ export default function LegalPageLayout({
 
       <main className="mx-auto max-w-3xl px-6 py-12 sm:py-16">
         <p className="text-sm font-semibold uppercase tracking-widest text-teal-800">
-          Legal
+          {eyebrow}
         </p>
         <h1 className="font-serif mt-2 text-3xl font-semibold tracking-tight text-stone-900 sm:text-4xl">
           {title}

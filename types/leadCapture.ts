@@ -21,6 +21,22 @@ export type LeadCaptureBudgetSummary = {
     clothing: number;
     education: number;
   };
+  /** Optional tool provenance (e.g. baby affordability wizard). */
+  tool?: string;
+  preparednessScore?: number;
+  preparednessLabel?: string;
+  year1Surplus?: number;
+  year1OneTimeTotal?: number;
+  year1RecurringTotal?: number;
+  wizardInputs?: {
+    annualGrossIncome?: number;
+    monthlySavings?: number;
+    paidLeaveWeeks?: number;
+    nurseryGear?: number;
+    stroller?: number;
+    medicalOopMax?: number;
+    initialSupplies?: number;
+  };
 };
 
 export type LeadCaptureRequest = {

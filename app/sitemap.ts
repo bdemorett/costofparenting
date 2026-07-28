@@ -10,13 +10,14 @@ import {
   type SitemapCityRow,
 } from "@/app/utils/sitemapScale";
 import { normalizeSiteUrl } from "@/app/utils/siteUrl";
+import { listSitemapStateSlugs } from "@/lib/stateHub";
 
 function siteOrigin(): string {
   return normalizeSiteUrl(process.env.NEXT_PUBLIC_SITE_URL);
 }
 
 /**
- * Flat list of all sitemap entries (home, static pages, then city guides).
+ * Flat list of all sitemap entries (home, static pages, state hubs, city guides).
  */
 function buildAllSitemapEntries(
   cities: SitemapCityRow[],
@@ -39,6 +40,15 @@ function buildAllSitemapEntries(
     }),
   );
 
+  const statePages: MetadataRoute.Sitemap = listSitemapStateSlugs().map(
+    (state) => ({
+      url: `${siteUrl}/${state}`,
+      lastModified,
+      changeFrequency: "monthly" as const,
+      priority: 0.85,
+    }),
+  );
+
   const cityPages: MetadataRoute.Sitemap = [];
   for (const city of cities) {
     const slug = String(city.slug || "")
@@ -58,7 +68,7 @@ function buildAllSitemapEntries(
     });
   }
 
-  return [home, ...staticPages, ...cityPages];
+  return [home, ...staticPages, ...statePages, ...cityPages];
 }
 
 /**

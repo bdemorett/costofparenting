@@ -38,6 +38,11 @@ export default function Footer() {
                 </Link>
               </li>
               <li>
+                <Link href="/tools/can-we-afford-a-baby" className="hover:text-teal-800">
+                  Can we afford a baby?
+                </Link>
+              </li>
+              <li>
                 <Link href="/pricing" className="hover:text-teal-800">
                   Premium access
                 </Link>
@@ -75,6 +80,13 @@ export default function Footer() {
             <p className="text-xs font-semibold uppercase tracking-wider text-stone-500">
               Methodology
             </p>
+            <ul className="mt-3 space-y-2 text-sm text-stone-700">
+              <li>
+                <Link href="/methodology" className="hover:text-teal-800">
+                  Data &amp; calculation models
+                </Link>
+              </li>
+            </ul>
             <p className="mt-3 text-sm leading-relaxed text-stone-600">
               Curated city baselines, global age multipliers, and secure Premium
               forecasts. Illustrative planning figures — verify locally before

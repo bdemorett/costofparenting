@@ -47,6 +47,41 @@ function parseBudget(raw: unknown): LeadCaptureBudgetSummary | null {
       clothing: Math.round(Number(bd.clothing) || 0),
       education: Math.round(Number(bd.education) || 0),
     },
+    tool: asString(b.tool, 60) || undefined,
+    preparednessScore: Number.isFinite(Number(b.preparednessScore))
+      ? Math.min(100, Math.max(1, Math.round(Number(b.preparednessScore))))
+      : undefined,
+    preparednessLabel: asString(b.preparednessLabel, 120) || undefined,
+    year1Surplus: Number.isFinite(Number(b.year1Surplus))
+      ? Math.round(Number(b.year1Surplus))
+      : undefined,
+    year1OneTimeTotal: Number.isFinite(Number(b.year1OneTimeTotal))
+      ? Math.round(Number(b.year1OneTimeTotal))
+      : undefined,
+    year1RecurringTotal: Number.isFinite(Number(b.year1RecurringTotal))
+      ? Math.round(Number(b.year1RecurringTotal))
+      : undefined,
+    wizardInputs: parseWizardInputs(b.wizardInputs),
+  };
+}
+
+function parseWizardInputs(
+  raw: unknown,
+): LeadCaptureBudgetSummary["wizardInputs"] | undefined {
+  if (!raw || typeof raw !== "object") return undefined;
+  const w = raw as Record<string, unknown>;
+  const num = (key: string) => {
+    const n = Number(w[key]);
+    return Number.isFinite(n) ? Math.round(n) : undefined;
+  };
+  return {
+    annualGrossIncome: num("annualGrossIncome"),
+    monthlySavings: num("monthlySavings"),
+    paidLeaveWeeks: num("paidLeaveWeeks"),
+    nurseryGear: num("nurseryGear"),
+    stroller: num("stroller"),
+    medicalOopMax: num("medicalOopMax"),
+    initialSupplies: num("initialSupplies"),
   };
 }
 
@@ -76,6 +111,11 @@ function buildEmailHtml(
       <h1 style="font-size:28px;line-height:1.2;margin:8px 0 16px">Your ${place} family budget</h1>
       <p style="font-size:16px;line-height:1.6;color:#57534e">Hi ${name}, here is a snapshot of the estimate you built.</p>
       <p style="font-size:15px;line-height:1.6"><strong>${budget.childCount}</strong> child(ren) · <strong>${budget.ageCategoryLabel}</strong> · <strong>${budget.careTypeLabel}</strong></p>
+      ${
+        budget.preparednessScore != null
+          ? `<p style="font-size:15px;line-height:1.6;margin:12px 0;padding:12px 14px;background:#f0fdfa;border-radius:8px"><strong>Financial preparedness score:</strong> ${budget.preparednessScore}/100 — ${budget.preparednessLabel || ""}</p>`
+          : ""
+      }
       <p style="font-size:32px;margin:20px 0 4px;font-weight:700">${formatUsd(budget.monthlyTotal)}<span style="font-size:16px;font-weight:500;color:#78716c"> / month</span></p>
       <p style="font-size:16px;color:#57534e;margin:0 0 20px">${formatUsd(budget.annualTotal)} / year</p>
       <table style="width:100%;border-collapse:collapse;font-size:14px">${rows}</table>
@@ -216,6 +256,18 @@ export async function POST(request: Request) {
       currency: "USD",
     },
     monthlyBreakdown: budget.monthlyBreakdown,
+    preparedness:
+      budget.preparednessScore != null
+        ? {
+            score: budget.preparednessScore,
+            label: budget.preparednessLabel,
+            year1Surplus: budget.year1Surplus,
+            year1OneTimeTotal: budget.year1OneTimeTotal,
+            year1RecurringTotal: budget.year1RecurringTotal,
+            tool: budget.tool,
+            wizardInputs: budget.wizardInputs,
+          }
+        : undefined,
     export: {
       formatHints: ["pdf", "email"],
       headline: `Family budget for ${budget.cityName}, ${budget.stateName}`,
