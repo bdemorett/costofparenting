@@ -4,11 +4,17 @@ import { notFound } from "next/navigation";
 import Footer from "@/components/Footer";
 import Navbar from "@/components/Navbar";
 import JsonLd from "@/components/seo/JsonLd";
+import { normalizeSiteUrl } from "@/app/utils/siteUrl";
 import {
   getStateHubData,
   listSitemapStateSlugs,
   type StateCityEntry,
 } from "@/lib/stateHub";
+import {
+  buildStateHubJsonLd,
+  buildStateSeoDescription,
+  buildStateSeoTitle,
+} from "@/lib/stateHubSchema";
 
 export const revalidate = 604800;
 export const dynamicParams = true;
@@ -40,24 +46,35 @@ export async function generateMetadata({
   const { state } = await params;
   const hub = getStateHubData(state);
   if (!hub) {
-    return { title: "State guide not found" };
+    notFound();
   }
 
-  const canonicalUrl = `https://costofparenting.com/${hub.stateSlug}`;
-  const title = `Cost of Raising a Child in ${hub.stateName} | City Rankings & Averages`;
-  const description = `2026 averages, most expensive and most affordable cities, and a full city directory for raising a child in ${hub.stateName}.`;
+  const siteUrl = normalizeSiteUrl(process.env.NEXT_PUBLIC_SITE_URL);
+  const canonicalUrl = `${siteUrl}/${hub.stateSlug}`;
+  const title = buildStateSeoTitle(hub.stateName);
+  const description = buildStateSeoDescription(hub);
 
   return {
-    title,
+    title: { absolute: title },
     description,
     alternates: {
       canonical: canonicalUrl,
     },
     openGraph: {
+      type: "website",
+      siteName: "Cost of Parenting",
       title,
       description,
       url: canonicalUrl,
-      type: "website",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+    },
+    robots: {
+      index: true,
+      follow: true,
     },
   };
 }
@@ -129,7 +146,7 @@ export default async function StateHubPage({
     notFound();
   }
 
-  const canonicalUrl = `https://costofparenting.com/${hub.stateSlug}`;
+  const siteUrl = normalizeSiteUrl(process.env.NEXT_PUBLIC_SITE_URL);
   const vsNational =
     hub.costVsNationalPct == null
       ? "Limited local sample"
@@ -137,41 +154,7 @@ export default async function StateHubPage({
         ? "In line with national average"
         : `${formatSignedPct(hub.costVsNationalPct)} vs national average`;
 
-  const jsonLd = {
-    "@context": "https://schema.org",
-    "@graph": [
-      {
-        "@type": "WebPage",
-        "@id": `${canonicalUrl}#webpage`,
-        url: canonicalUrl,
-        name: `Cost of Raising a Child in ${hub.stateName} (2026 Guide)`,
-        description: `City rankings and averages for raising a child in ${hub.stateName}.`,
-        isPartOf: {
-          "@type": "WebSite",
-          name: "Cost of Parenting",
-          url: "https://costofparenting.com",
-        },
-      },
-      {
-        "@type": "BreadcrumbList",
-        "@id": `${canonicalUrl}#breadcrumb`,
-        itemListElement: [
-          {
-            "@type": "ListItem",
-            position: 1,
-            name: "Home",
-            item: "https://costofparenting.com/",
-          },
-          {
-            "@type": "ListItem",
-            position: 2,
-            name: hub.stateName,
-            item: canonicalUrl,
-          },
-        ],
-      },
-    ],
-  };
+  const jsonLd = buildStateHubJsonLd(hub, siteUrl);
 
   return (
     <div className="min-h-screen bg-cream text-stone-700">

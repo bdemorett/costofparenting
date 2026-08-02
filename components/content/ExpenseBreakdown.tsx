@@ -1,3 +1,5 @@
+import FinancialLeadCta from "@/app/components/content/FinancialLeadCta";
+
 function formatUsd(value: number): string {
   return new Intl.NumberFormat("en-US", {
     style: "currency",
@@ -37,6 +39,10 @@ export interface ExpenseBreakdownProps {
     foodPerChildMonthly?: number;
     regionalHealthcareIndex?: number;
   };
+  /** Synthesized category explanations (preferred over static templates). */
+  synthesizedWhys?: Partial<Record<ExpenseCategoryKey, string>>;
+  /** Optional takeaway override from the location synthesizer. */
+  takeawayOverride?: string;
 }
 
 type CategoryDef = {
@@ -47,69 +53,71 @@ type CategoryDef = {
 };
 
 function buildCategories(props: ExpenseBreakdownProps): CategoryDef[] {
-  const { cityName, stateName, context } = props;
+  const { cityName, stateName, context, synthesizedWhys } = props;
   const tenure = context?.tenure ?? "mixed";
   const housingJump = context?.housingPremiumMonthly;
   const infantCare = context?.infantChildcareMonthly;
   const foodMonthly = context?.foodPerChildMonthly;
   const healthIndex = context?.regionalHealthcareIndex;
 
-  return [
-    {
-      key: "housing",
-      label: "Housing",
-      amount: props.housing,
-      why:
-        housingJump != null
-          ? `In ${cityName}, the typical jump from a 1–2 bedroom into a family-sized home adds about ${formatUsd(housingJump)}/mo (${tenure}). That premium — not just base rent or mortgage — is what shows up in this annual housing share for ${stateName} families.`
-          : `Family housing in ${cityName} usually means more bedrooms, larger utilities, and a metro premium versus couple-sized footprints. This line is the annual share of that child-driven housing uplift in ${stateName}.`,
-    },
-    {
-      key: "childcare",
-      label: "Childcare",
-      amount: props.childcare,
-      why:
-        infantCare != null
-          ? `Center-based infant care alone runs near ${formatUsd(infantCare)}/mo in ${cityName}. Even after kids start school, after-care and camps keep this category elevated versus national averages for many ${stateName} metros.`
-          : `Licensed daycare, preschool, and after-school care dominate early years in ${cityName}. Local wage floors and facility demand keep childcare one of the stickiest line items for ${stateName} parents.`,
-    },
-    {
-      key: "food",
-      label: "Food",
-      amount: props.food,
-      why:
-        foodMonthly != null
-          ? `Grocery spend attributable to one school-age child averages about ${formatUsd(foodMonthly)}/mo in ${cityName}. Infant formula and toddler food push earlier years higher before settling into this annual food share.`
-          : `Child food costs in ${cityName} track local grocery prices, school lunch habits, and dining-out norms across ${stateName} — compounding steadily from infancy through the teen years.`,
-    },
-    {
-      key: "transportation",
-      label: "Transportation",
-      amount: props.transportation,
-      why: `Car seats, larger vehicles, school commute miles, and activity travel add a durable transportation tax in ${cityName}. This share reflects the child-driven lift above a couple-only mobility budget in ${stateName}.`,
-    },
-    {
-      key: "healthcare",
-      label: "Healthcare",
-      amount: props.healthcare,
-      why:
-        healthIndex != null
-          ? `${cityName} healthcare costs sit at about ${Math.round(healthIndex * 100)}% of the national index. Employer family premiums, pediatric visits, and dental/vision add-ons together form this annual healthcare share for ${stateName} families.`
-          : `Family premiums, pediatric care, and out-of-pocket visits in ${cityName} stack into this annual healthcare line — often underestimated until a second child or marketplace coverage enters the picture.`,
-    },
-    {
-      key: "clothing",
-      label: "Clothing",
-      amount: props.clothing,
-      why: `Kids outgrow sizes fast. In ${cityName}, seasonal gear, school clothes, and activity kits keep clothing as a smaller but recurring slice of the annual child budget across ${stateName}.`,
-    },
-    {
-      key: "misc",
-      label: "Misc",
-      amount: props.misc,
-      why: `Diapers and supplies early on, plus activities, gifts, and household uplift later, land here. In ${cityName} this catch-all covers the soft costs that don’t fit neatly into housing or childcare.`,
-    },
+  const fallback: Record<ExpenseCategoryKey, string> = {
+    housing:
+      housingJump != null
+        ? `In ${cityName}, the typical jump from a 1–2 bedroom into a family-sized home adds about ${formatUsd(housingJump)}/mo (${tenure}). That premium — not just base rent or mortgage — is what shows up in this annual housing share for ${stateName} families.`
+        : `Family housing in ${cityName} usually means more bedrooms, larger utilities, and a metro premium versus couple-sized footprints. This line is the annual share of that child-driven housing uplift in ${stateName}.`,
+    childcare:
+      infantCare != null
+        ? `Center-based infant care alone runs near ${formatUsd(infantCare)}/mo in ${cityName}. Even after kids start school, after-care and camps keep this category elevated versus national averages for many ${stateName} metros.`
+        : `Licensed daycare, preschool, and after-school care dominate early years in ${cityName}. Local wage floors and facility demand keep childcare one of the stickiest line items for ${stateName} parents.`,
+    food:
+      foodMonthly != null
+        ? `Grocery spend attributable to one school-age child averages about ${formatUsd(foodMonthly)}/mo in ${cityName}. Infant formula and toddler food push earlier years higher before settling into this annual food share.`
+        : `Child food costs in ${cityName} track local grocery prices, school lunch habits, and dining-out norms across ${stateName} — compounding steadily from infancy through the teen years.`,
+    transportation: `Car seats, larger vehicles, school commute miles, and activity travel add a durable transportation tax in ${cityName}. This share reflects the child-driven lift above a couple-only mobility budget in ${stateName}.`,
+    healthcare:
+      healthIndex != null
+        ? `${cityName} healthcare costs sit at about ${Math.round(healthIndex * 100)}% of the national index. Employer family premiums, pediatric visits, and dental/vision add-ons together form this annual healthcare share for ${stateName} families.`
+        : `Family premiums, pediatric care, and out-of-pocket visits in ${cityName} stack into this annual healthcare line — often underestimated until a second child or marketplace coverage enters the picture.`,
+    clothing: `Kids outgrow sizes fast. In ${cityName}, seasonal gear, school clothes, and activity kits keep clothing as a smaller but recurring slice of the annual child budget across ${stateName}.`,
+    misc: `Diapers and supplies early on, plus activities, gifts, and household uplift later, land here. In ${cityName} this catch-all covers the soft costs that don’t fit neatly into housing or childcare.`,
+  };
+
+  const keys: ExpenseCategoryKey[] = [
+    "housing",
+    "childcare",
+    "food",
+    "transportation",
+    "healthcare",
+    "clothing",
+    "misc",
   ];
+
+  const amounts: Record<ExpenseCategoryKey, number> = {
+    housing: props.housing,
+    childcare: props.childcare,
+    food: props.food,
+    transportation: props.transportation,
+    healthcare: props.healthcare,
+    clothing: props.clothing,
+    misc: props.misc,
+  };
+
+  const labels: Record<ExpenseCategoryKey, string> = {
+    housing: "Housing",
+    childcare: "Childcare",
+    food: "Food",
+    transportation: "Transportation",
+    healthcare: "Healthcare",
+    clothing: "Clothing",
+    misc: "Misc",
+  };
+
+  return keys.map((key) => ({
+    key,
+    label: labels[key],
+    amount: amounts[key],
+    why: synthesizedWhys?.[key] || fallback[key],
+  }));
 }
 
 function biggestDriverCopy(
@@ -140,7 +148,7 @@ function biggestDriverCopy(
  * city-specific explanations for each category.
  */
 export default function ExpenseBreakdown(props: ExpenseBreakdownProps) {
-  const { cityName, stateName, context } = props;
+  const { cityName, stateName, context, takeawayOverride } = props;
   const categories = buildCategories(props)
     .map((c) => ({ ...c, amount: Math.max(0, Math.round(c.amount)) }))
     .sort((a, b) => b.amount - a.amount);
@@ -148,13 +156,15 @@ export default function ExpenseBreakdown(props: ExpenseBreakdownProps) {
   const total = categories.reduce((sum, c) => sum + c.amount, 0);
   const leader = categories[0];
   const leaderPct = total > 0 ? (leader.amount / total) * 100 : 0;
-  const takeaway = biggestDriverCopy(
-    cityName,
-    leader,
-    leaderPct,
-    context?.infantChildcareMonthly,
-    total,
-  );
+  const takeaway =
+    takeawayOverride ||
+    biggestDriverCopy(
+      cityName,
+      leader,
+      leaderPct,
+      context?.infantChildcareMonthly,
+      total,
+    );
 
   return (
     <section
@@ -262,6 +272,12 @@ export default function ExpenseBreakdown(props: ExpenseBreakdownProps) {
           );
         })}
       </div>
+
+      <FinancialLeadCta
+        cityName={cityName}
+        stateName={stateName}
+        placement="expense_breakdown"
+      />
     </section>
   );
 }

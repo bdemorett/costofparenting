@@ -10,15 +10,19 @@ import CalculatorCtaCard from "@/components/content/CalculatorCtaCard";
 import CityGuideIntro from "@/components/content/CityGuideIntro";
 import ExpenseBreakdown from "@/components/content/ExpenseBreakdown";
 import NearbyCities from "@/components/content/NearbyCities";
+import LocalSubsidies from "@/components/content/LocalSubsidies";
+import LocationDeepGuide from "@/components/content/LocationDeepGuide";
 import CostCalculator from "@/components/calculator/CostCalculator";
 import RevenueEngine from "@/app/components/RevenueEngine";
 import Footer from "@/components/Footer";
 import Navbar from "@/components/Navbar";
 import JsonLd from "@/components/seo/JsonLd";
-import { buildCityPageJsonLd } from "@/lib/cityPageSchema";
-import { getNearbyCities, LOCATION_BASELINES } from "@/lib/mockData";
+import { buildCityPageJsonLd, buildCitySeoDescription, buildCitySeoTitle } from "@/lib/cityPageSchema";
+import { synthesizeLocationContent } from "@/lib/locationCommentary";
+import { getNearbyCities, LOCATION_BASELINES, sumCostBreakdown } from "@/lib/mockData";
 import type { LocationBaseline } from "@/types/parenting";
 import { normalizeSiteUrl } from "@/app/utils/siteUrl";
+import { getStateName } from "@/lib/stateHub";
 
 /** Public cost pages stay on the edge cache for 7 days — auth stays client-side. */
 export const revalidate = 604800;
@@ -104,36 +108,40 @@ export async function generateMetadata({
   params: PageParams;
 }): Promise<Metadata> {
   const { state, city } = await params;
-  if (!lookupCuratedCity(state, city)) {
+  const baseline = lookupCuratedCity(state, city);
+  if (!baseline) {
     notFound();
   }
 
-  const cleanCity = deslugifyCity(city);
-  const cleanState = normalizeState(state);
-  const place = `${cleanCity}, ${cleanState}`;
+  const cleanCity =
+    baseline.displayName.split(",")[0]?.trim() || deslugifyCity(city);
+  const stateName =
+    getStateName(state) || baseline.state || normalizeState(state);
+  const place = `${cleanCity}, ${stateName}`;
   const siteUrl = normalizeSiteUrl(process.env.NEXT_PUBLIC_SITE_URL);
   const canonicalPath = `/cost-of-parenting/${state}/${city}`;
   const canonicalUrl = `${siteUrl}${canonicalPath}`;
   const ogImageUrl = `${siteUrl}${canonicalPath}/opengraph-image`;
-  const title = `Cost of Raising a Child in ${place} (2026 Calculator)`;
-  const description = `Detailed breakdown of childcare, housing, food, and education expenses to raise a child in ${place}. Calculate your estimated family budget.`;
+  const title = buildCitySeoTitle(place);
+  const description = buildCitySeoDescription(place, baseline);
   const ogImages = [
     {
       url: ogImageUrl,
       width: 1200,
       height: 630,
-      alt: `Cost of raising a child in ${cleanCity}, ${cleanState}`,
+      alt: `Cost of raising a child in ${place}`,
     },
   ];
 
   return {
-    title,
+    title: { absolute: title },
     description,
     alternates: {
       canonical: canonicalUrl,
     },
     openGraph: {
-      type: "website",
+      type: "article",
+      siteName: "Cost of Parenting",
       title,
       description,
       url: canonicalUrl,
@@ -144,6 +152,15 @@ export async function generateMetadata({
       title,
       description,
       images: [ogImageUrl],
+    },
+    robots: {
+      index: true,
+      follow: true,
+    },
+    other: {
+      "costofparenting:annual_baseline": String(
+        Math.round(sumCostBreakdown(baseline.annualCosts)),
+      ),
     },
   };
 }
@@ -172,6 +189,13 @@ export default async function CostOfParentingCityPage({
     siteUrl,
   });
   const cityName = cityLabel.split(",")[0]?.trim() || cleanCity;
+  const stateDisplay =
+    getStateName(state) || baseline.state || cleanState;
+  const locationContent = synthesizeLocationContent(
+    baseline,
+    cityName,
+    stateDisplay,
+  );
   const nearbyCities = getNearbyCities(baseline.locationId, 6);
   const comparePeer = nearbyCities[0];
   const compareHref = comparePeer
@@ -194,10 +218,15 @@ export default async function CostOfParentingCityPage({
           baseline={baseline}
           stateSlug={state}
           citySlug={city}
+          introParagraphs={locationContent.introParagraphs}
         />
 
         <div className="mt-8">
-          <AgeStageBreakdown baseline={baseline} cityLabel={cityLabel} />
+          <AgeStageBreakdown
+            baseline={baseline}
+            cityLabel={cityLabel}
+            stageCommentary={locationContent.stageCommentary}
+          />
         </div>
 
         <div className="mt-8">
@@ -221,6 +250,21 @@ export default async function CostOfParentingCityPage({
               foodPerChildMonthly: baseline.foodAndSupplies.foodPerChild,
               regionalHealthcareIndex: baseline.healthcare.regionalIndex,
             }}
+            synthesizedWhys={locationContent.expenseWhys}
+            takeawayOverride={locationContent.introParagraphs[0]}
+          />
+        </div>
+
+        <div className="mt-8">
+          <LocationDeepGuide content={locationContent} />
+        </div>
+
+        <div className="mt-8">
+          <LocalSubsidies
+            cityName={cityName}
+            stateName={stateDisplay}
+            stateCode={baseline.stateCode}
+            framing={locationContent.subsidyFraming}
           />
         </div>
 
@@ -275,8 +319,9 @@ export default async function CostOfParentingCityPage({
                 editorial={
                   <AuthorityArticle
                     cityLabel={cityLabel}
-                    state={cleanState}
+                    state={stateDisplay}
                     baseline={baseline}
+                    content={locationContent}
                   />
                 }
               />

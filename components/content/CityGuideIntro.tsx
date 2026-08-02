@@ -16,6 +16,8 @@ export interface CityGuideIntroProps {
   baseline: LocationBaseline;
   stateSlug: string;
   citySlug: string;
+  /** Synthesized lead paragraphs for uniqueness. */
+  introParagraphs?: string[];
 }
 
 /**
@@ -27,6 +29,7 @@ export default function CityGuideIntro({
   baseline,
   stateSlug,
   citySlug,
+  introParagraphs,
 }: CityGuideIntroProps) {
   const infantMonthly = sumStageMonthly(baseline.stageMonthly.infant);
   const housingJump = baseline.housing.familyPremiumMonthly;
@@ -52,12 +55,20 @@ export default function CityGuideIntro({
       <h1 className="font-serif mt-2 text-3xl font-semibold tracking-tight text-stone-900 sm:text-4xl lg:text-5xl">
         Cost of Parenting in {cityLabel}
       </h1>
-      <p className="mt-4 max-w-3xl text-base leading-relaxed text-stone-600 sm:text-lg">
-        A practical guide to raising kids in {cityLabel}, {state}: stage-based
-        childcare (infant through school age), the housing jump from a 1–2 bed
-        to a family home, food and supplies, and healthcare factors — plus a
-        calculator to build your own 18-year roadmap.
-      </p>
+      {introParagraphs && introParagraphs.length > 0 ? (
+        <div className="mt-4 max-w-3xl space-y-3 text-base leading-relaxed text-stone-600 sm:text-lg">
+          {introParagraphs.slice(0, 2).map((paragraph) => (
+            <p key={paragraph.slice(0, 40)}>{paragraph}</p>
+          ))}
+        </div>
+      ) : (
+        <p className="mt-4 max-w-3xl text-base leading-relaxed text-stone-600 sm:text-lg">
+          A practical guide to raising kids in {cityLabel}, {state}: stage-based
+          childcare (infant through school age), the housing jump from a 1–2 bed
+          to a family home, food and supplies, and healthcare factors — plus a
+          calculator to build your own 18-year roadmap.
+        </p>
+      )}
 
       <dl className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <GuideStat

@@ -8,12 +8,42 @@ import type {
 } from "@/types/parenting";
 import { sumStageMonthly } from "@/lib/mockData";
 
-const STAGES: {
+const LINE_ITEMS: {
+  key: keyof StageMonthlyBreakdown;
+  label: string;
+}[] = [
+  { key: "childcare", label: "Childcare" },
+  { key: "food", label: "Food" },
+  { key: "supplies", label: "Diapers & supplies" },
+  { key: "healthcare", label: "Healthcare share" },
+  { key: "other", label: "Other" },
+];
+
+function formatUsd(value: number): string {
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+    maximumFractionDigits: 0,
+  }).format(value);
+}
+
+export type StageCommentaryProp = {
   key: CareStageKey;
   label: string;
   ages: string;
   blurb: string;
-}[] = [
+  lead?: string;
+  bullets?: string[];
+};
+
+export interface AgeStageBreakdownProps {
+  baseline: LocationBaseline;
+  cityLabel: string;
+  /** Location-synthesized stage blurbs / bullets for uniqueness. */
+  stageCommentary?: Record<CareStageKey, StageCommentaryProp>;
+}
+
+const FALLBACK_STAGES: StageCommentaryProp[] = [
   {
     key: "infant",
     label: "Infant",
@@ -34,39 +64,23 @@ const STAGES: {
   },
 ];
 
-const LINE_ITEMS: {
-  key: keyof StageMonthlyBreakdown;
-  label: string;
-}[] = [
-  { key: "childcare", label: "Childcare" },
-  { key: "food", label: "Food" },
-  { key: "supplies", label: "Diapers & supplies" },
-  { key: "healthcare", label: "Healthcare share" },
-  { key: "other", label: "Other" },
-];
-
-function formatUsd(value: number): string {
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
-    maximumFractionDigits: 0,
-  }).format(value);
-}
-
-export interface AgeStageBreakdownProps {
-  baseline: LocationBaseline;
-  cityLabel: string;
-}
-
 /**
  * Interactive Infant / Toddler / School-age monthly cost tabs for city guides.
  */
 export default function AgeStageBreakdown({
   baseline,
   cityLabel,
+  stageCommentary,
 }: AgeStageBreakdownProps) {
+  const stages =
+    stageCommentary != null
+      ? (["infant", "toddler", "schoolAge"] as CareStageKey[]).map(
+          (key) => stageCommentary[key],
+        )
+      : FALLBACK_STAGES;
+
   const [active, setActive] = useState<CareStageKey>("infant");
-  const stageMeta = STAGES.find((s) => s.key === active) ?? STAGES[0];
+  const stageMeta = stages.find((s) => s.key === active) ?? stages[0];
   const costs = baseline.stageMonthly[active];
   const monthlyTotal = sumStageMonthly(costs);
   const maxLine = Math.max(...LINE_ITEMS.map((item) => costs[item.key]), 1);
@@ -87,8 +101,9 @@ export default function AgeStageBreakdown({
         Monthly parenting costs in {cityLabel}
       </h2>
       <p className="mt-2 max-w-2xl text-sm leading-relaxed text-stone-600">
-        Compare stage-based childcare, food, supplies, and healthcare — then
-        model your household in the calculator console.
+        Compare stage-based childcare, food, supplies, and healthcare for{" "}
+        {cityLabel} — totals update as you switch infant, toddler, and school-age
+        tabs.
       </p>
 
       <div
@@ -96,7 +111,7 @@ export default function AgeStageBreakdown({
         aria-label="Care stage"
         className="mt-6 flex flex-wrap gap-2"
       >
-        {STAGES.map((stage) => {
+        {stages.map((stage) => {
           const selected = stage.key === active;
           return (
             <button
@@ -132,7 +147,12 @@ export default function AgeStageBreakdown({
             <p className="text-sm font-medium text-stone-800">
               {stageMeta.label} · {stageMeta.ages}
             </p>
-            <p className="mt-1 text-sm text-stone-500">{stageMeta.blurb}</p>
+            <p className="mt-1 text-sm text-stone-600">{stageMeta.blurb}</p>
+            {stageMeta.lead ? (
+              <p className="mt-2 text-sm leading-relaxed text-stone-500">
+                {stageMeta.lead}
+              </p>
+            ) : null}
           </div>
           <div className="rounded-xl border border-teal-100 bg-teal-50/80 px-4 py-3 text-right">
             <p className="text-[10px] font-semibold uppercase tracking-wider text-teal-700">
@@ -179,6 +199,14 @@ export default function AgeStageBreakdown({
             );
           })}
         </div>
+
+        {stageMeta.bullets && stageMeta.bullets.length > 0 ? (
+          <ul className="mt-6 list-disc space-y-2 border-t border-stone-100 pt-5 pl-5 text-sm leading-relaxed text-stone-600">
+            {stageMeta.bullets.map((bullet) => (
+              <li key={bullet.slice(0, 36)}>{bullet}</li>
+            ))}
+          </ul>
+        ) : null}
       </div>
     </section>
   );
